@@ -1,14 +1,11 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <algorithm>
 #include "MultilevelGraph.h"
-#include "Level.h"
-#include "Vertex.h"
-#include "Edge.h"
 
 int n, m;
 vector<Vertex *> originalVertices;
+vector<int> degrees;
 vector<int> levelSizes;
 
 void init();
@@ -19,22 +16,27 @@ int main() {
     cout << "start" << endl;
     init();
     cout << "original graph loaded" << endl;
+
     auto verticesSortedByDegree = getVerticesSortedByDegree();
 
     MultilevelGraph M(originalVertices);
     for (int i = 1; i < levelSizes.size(); ++i) {
         M.addLevel(vector<Vertex *>(verticesSortedByDegree.begin(), verticesSortedByDegree.begin() + levelSizes[i]));
     }
+//    M.printAll();
 
+    cout << "finish";
     return 0;
 }
 
 void init() {
-    const char *const filename = "../USairport500.txt";
+//    const char *const filename = "../USairport500.in";
+    const char *const filename = "../test.in";
     fstream file(filename);
 
     if (file.good()) {
         file >> n >> m;
+
         int levelsCount;
         file >> levelsCount;
         levelSizes.push_back(n);
@@ -43,15 +45,21 @@ void init() {
             levelSizes.push_back(levelSize);
         }
 
-        for (int i = 0; i <= n; ++i) {
-            originalVertices.push_back(new Vertex(i)); // 0 is dummy
+        degrees.push_back(0);
+        for (int i = 1; i <= n; ++i) {
+            originalVertices.push_back(new Vertex(i));
+            degrees.push_back(0);
         }
 
         int source, dest;
-        LL weight;
+        ULL weight;
         for (int i = 0; i < m; ++i) {
             file >> source >> dest >> weight;
-            originalVertices[source]->link(originalVertices[dest], weight);
+            if (source != dest) {
+                originalVertices[source - 1]->link(originalVertices[dest - 1], weight);
+                ++degrees[source];
+                ++degrees[dest];
+            }
         }
         file.close();
     }
@@ -62,9 +70,9 @@ void init() {
 
 vector<Vertex *> getVerticesSortedByDegree() {
     auto result = originalVertices;
-    sort(result.begin(), result.end(), [](Vertex *a, Vertex *b) -> bool { return a->degree() > b->degree(); });
+    sort(result.begin(), result.end(), [](Vertex *a, Vertex *b) -> bool { return degrees[a->id] > degrees[b->id]; });
 //    for (Vertex *v: result) {
-//        cout << v->id << ": " << v->degree() << endl;
+//        cout << v->id << ": " << degrees[v->id] << endl;
 //    }
     return result;
 }

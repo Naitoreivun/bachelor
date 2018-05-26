@@ -1,12 +1,8 @@
 #include "Vertex.h"
 
-Vertex::Vertex(int id) : id(id) {}
+Vertex::Vertex(int id) : id(id), visited(false), dist(0ull), parent(nullptr) {}
 
-int Vertex::degree() {
-    return levelEdges.size() + upwardEdges.size() + downwardEdges.size();
-}
-
-void Vertex::link(Vertex *dest, LL weight, unordered_set<Edge *> &edges) {
+void Vertex::link(Vertex *dest, ULL weight, unordered_set<Edge *> &edges) {
     edges.insert(new Edge(dest, weight));
 }
 

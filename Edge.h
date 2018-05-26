@@ -7,9 +7,9 @@ struct Vertex;
 
 struct Edge {
     Vertex *const dest;
-    const LL weight;
+    const ULL weight;
 
-    Edge(Vertex *dest, LL weight);
+    Edge(Vertex *dest, ULL weight);
 };
 
 

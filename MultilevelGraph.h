@@ -9,6 +9,7 @@ struct MultilevelGraph {
 
     explicit MultilevelGraph(const vector<Vertex *> &originalVertices);
     void addLevel(const vector<Vertex *> &selectedVertices);
+    void printAll();
 };
 
 #endif //BACHELOR_MULTILEVELGRAPH_H

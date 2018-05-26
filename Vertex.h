@@ -8,28 +8,29 @@ struct Edge;
 
 struct Vertex {
     const int id;
+    bool visited;
+    ULL dist;
+    Vertex *parent;
     unordered_set<Edge *> levelEdges;
     unordered_set<Edge *> upwardEdges;
     unordered_set<Edge *> downwardEdges;
 
     explicit Vertex(int id);
 
-    inline void link(Vertex *dest, LL weight) {
+    inline void link(Vertex *dest, ULL weight) {
         link(dest, weight, levelEdges);
     }
 
-    inline void linkUp(Vertex *dest, LL weight) {
+    inline void linkUp(Vertex *dest, ULL weight) {
         link(dest, weight, upwardEdges);
     }
 
-    inline void linkDown(Vertex *dest, LL weight) {
+    inline void linkDown(Vertex *dest, ULL weight) {
         link(dest, weight, downwardEdges);
     }
 
-    int degree();
-
 private:
-    void link(Vertex *dest, LL weight, unordered_set<Edge *> &edges);
+    void link(Vertex *dest, ULL weight, unordered_set<Edge *> &edges);
 };
 
 // http://thispointer.com/how-to-use-unordered_set-with-user-defined-classes-tutorial-example/
