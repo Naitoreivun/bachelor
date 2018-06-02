@@ -23,15 +23,18 @@ int main() {
     for (int i = 1; i < levelSizes.size(); ++i) {
         M.addLevel(vector<Vertex *>(verticesSortedByDegree.begin(), verticesSortedByDegree.begin() + levelSizes[i]));
     }
-//    M.printAll();
+
+    M.printAll();
+    M.printConnectedComponents();
 
     cout << "finish";
     return 0;
 }
 
 void init() {
-//    const char *const filename = "../USairport500.in";
-    const char *const filename = "../test.in";
+//    const char *const filename = "../tests/USairport500.in";
+    const char *const filename = "../tests/test.in";
+//    const char *const filename = "../tests/test2.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -69,7 +72,7 @@ void init() {
 }
 
 vector<Vertex *> getVerticesSortedByDegree() {
-    auto result = originalVertices;
+    vector<Vertex *> result = originalVertices;
     sort(result.begin(), result.end(), [](Vertex *a, Vertex *b) -> bool { return degrees[a->id] > degrees[b->id]; });
 //    for (Vertex *v: result) {
 //        cout << v->id << ": " << degrees[v->id] << endl;
