@@ -27,6 +27,8 @@ int main() {
     M.printAll();
     M.printConnectedComponents();
 
+    ULL distance = M.calculateDistance(originalVertices[6], originalVertices[10]); // 7 -> 11
+
     cout << "finish";
     return 0;
 }

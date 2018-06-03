@@ -2,10 +2,8 @@
 #define BACHELOR_VERTEX_H
 
 #include "imports_and_configs.h"
-#include "Edge.h"
 #include "ConnectedComponent.h"
 
-struct Edge;
 struct ConnectedComponent;
 
 struct Vertex {
@@ -13,9 +11,9 @@ struct Vertex {
     bool visited;
     ULL dist;
     Vertex *parent;
-    unordered_set<Edge *> levelEdges;
-    unordered_set<Edge *> upwardEdges;
-    unordered_set<Edge *> downwardEdges;
+    unordered_map<Vertex *, ULL> levelEdges;
+    unordered_map<Vertex *, ULL> upwardEdges;
+    unordered_map<Vertex *, ULL> downwardEdges;
     unordered_set<ConnectedComponent *> adjCC;
 
     explicit Vertex(int id);
@@ -35,7 +33,7 @@ struct Vertex {
     void addParentAdjVertexForEveryAdjCC(Vertex *vertex);
 
 private:
-    void link(Vertex *dest, ULL weight, unordered_set<Edge *> &edges);
+    void link(Vertex *dest, ULL weight, unordered_map<Vertex *, ULL> &edges);
 };
 
 // http://thispointer.com/how-to-use-unordered_set-with-user-defined-classes-tutorial-example/

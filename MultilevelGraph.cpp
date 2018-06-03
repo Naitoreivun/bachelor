@@ -31,16 +31,16 @@ void MultilevelGraph::printAll() {
 //            cout << u->id << ":\n";
             cout << u->id << "(" << u << "):\n";
             cout << "\tupward:";
-            for (Edge *edge: u->upwardEdges) {
-                cout << " " << edge->dest->id << "(" << edge->weight << ")";
+            for (auto edge: u->upwardEdges) {
+                cout << " " << edge.first->id << "(" << edge.second << ")";
             }
             cout << "\n\tlevel:";
-            for (Edge *edge: u->levelEdges) {
-                cout << " " << edge->dest->id << "(" << edge->weight << ")";
+            for (auto edge: u->levelEdges) {
+                cout << " " << edge.first->id << "(" << edge.second << ")";
             }
             cout << "\n\tdownward:";
-            for (Edge *edge: u->downwardEdges) {
-                cout << " " << edge->dest->id << "(" << edge->weight << ")";
+            for (auto edge: u->downwardEdges) {
+                cout << " " << edge.first->id << "(" << edge.second << ")";
             }
             cout << "\n";
         }
@@ -58,4 +58,10 @@ void MultilevelGraph::printConnectedComponents() {
         }
         cout << endl;
     }
+}
+
+ULL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
+    cout << (*source->adjCC.begin())->id << endl;
+    cout << (*target->adjCC.begin())->id << endl;
+    return 0;
 }

@@ -2,8 +2,8 @@
 
 Vertex::Vertex(int id) : id(id), visited(false), dist(0ull), parent(nullptr) {}
 
-void Vertex::link(Vertex *dest, ULL weight, unordered_set<Edge *> &edges) {
-    edges.insert(new Edge(dest, weight));
+void Vertex::link(Vertex *dest, ULL weight, unordered_map<Vertex *, ULL> &edges) {
+    edges[dest] = weight;
 }
 
 void Vertex::addParentAdjVertexForEveryAdjCC(Vertex *const vertex) {

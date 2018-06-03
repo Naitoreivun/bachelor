@@ -68,13 +68,13 @@ void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVerti
         }
         u->visited = true;
 
-        for (Edge *edge: u->levelEdges) {
-            Vertex *const dest = edge->dest;
+        for (auto edge: u->levelEdges) {
+            Vertex *const dest = edge.first;
             if (dest->visited) {
                 continue;
             }
 
-            const ULL newDist = u->dist + edge->weight;
+            const ULL newDist = u->dist + edge.second;
             if (newDist < dest->dist) { // todo: consider edges count from source when ==
                 Q.erase(dest);
                 dest->dist = newDist;
@@ -119,9 +119,9 @@ void Level::pickEdgesForNewLevel(Vertex *prevLevelVertex) {
 }
 
 void Level::addChildrenToQueue(Vertex *parent, std::queue<Vertex *> &Q) {
-    for (Edge *edge: parent->levelEdges) {
-        if (edge->dest->parent == parent) {
-            Q.push(edge->dest);
+    for (auto edge: parent->levelEdges) {
+        if (edge.first->parent == parent) {
+            Q.push(edge.first);
         }
     }
 }

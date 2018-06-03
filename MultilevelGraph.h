@@ -11,6 +11,8 @@ struct MultilevelGraph {
     void addLevel(const vector<Vertex *> &selectedVertices);
     void printAll();
     void printConnectedComponents();
+
+    ULL calculateDistance(Vertex *source, Vertex *target);
 };
 
 #endif //BACHELOR_MULTILEVELGRAPH_H
