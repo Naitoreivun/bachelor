@@ -23,11 +23,17 @@ int main() {
     for (int i = 1; i < levelSizes.size(); ++i) {
         M.addLevel(vector<Vertex *>(verticesSortedByDegree.begin(), verticesSortedByDegree.begin() + levelSizes[i]));
     }
+    M.prepareVerticesForQueries();
 
     M.printAll();
     M.printConnectedComponents();
 
-    ULL distance = M.calculateDistance(originalVertices[6], originalVertices[10]); // 7 -> 11
+    cout << M.calculateDistance(originalVertices[0], originalVertices[10]) << endl; // 1 -> 11
+    cout << M.calculateDistance(originalVertices[10], originalVertices[0]) << endl; // 11 -> 1
+    cout << M.calculateDistance(originalVertices[6], originalVertices[10]) << endl; // 7 -> 11
+    cout << M.calculateDistance(originalVertices[3], originalVertices[10]) << endl; // 4 -> 11
+    cout << M.calculateDistance(originalVertices[2], originalVertices[9]) << endl; // 3 -> 10
+    cout << M.calculateDistance(originalVertices[6], originalVertices[4]) << endl; // 7 -> 5
 
     cout << "finish";
     return 0;

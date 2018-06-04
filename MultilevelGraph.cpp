@@ -60,8 +60,166 @@ void MultilevelGraph::printConnectedComponents() {
     }
 }
 
+void MultilevelGraph::prepareVerticesForQueries() {
+    for (Level &level: levels) {
+        for (Vertex *v: level.selectedVertices) {
+            v->reset();
+        }
+    }
+    for (int i = 1; i < levels.size(); ++i) {
+        for (Vertex *v: levels[i].selectedVertices) {
+            Vertex *lowerV = *levels[i - 1].selectedVertices.find(v);
+            v->downwardEdges[lowerV] = 0ull;
+            lowerV->upwardEdges[v] = 0ull;
+        }
+    }
+}
+
 ULL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
-    cout << (*source->adjCC.begin())->id << endl;
-    cout << (*target->adjCC.begin())->id << endl;
-    return 0;
+    vector<ConnectedComponent *> upwardCCSourcePath = getUpwardCCPath(source);
+    vector<ConnectedComponent *> upwardCCTargetPath = getUpwardCCPath(target);
+    popEveryCommonCCAncestors(upwardCCSourcePath, upwardCCTargetPath);
+    auto sourceTopCCAdjVertices = upwardCCSourcePath.back()->adjVertices;
+    auto targetTopCCAdjVertices = upwardCCTargetPath.back()->adjVertices;
+
+//    cout << "Source CC path:\n";
+//    for (ConnectedComponent *cc: upwardCCSourcePath) {
+//        cc->print();
+//    }
+//    cout << "Target CC path:\n";
+//    for (ConnectedComponent *cc: upwardCCTargetPath) {
+//        cc->print();
+//    }
+//    cout << endl;
+
+    set<Triple, TripleDijkstraComparator> Q;
+    source->dist = 0;
+    Q.insert({source, UP, 1});
+
+
+    while (!Q.empty()) {
+        const Triple triple = *Q.begin();
+        Q.erase(triple);
+        if (triple.vertex == target) {
+            break;
+        }
+        if (triple.vertex->visited) {
+            continue;
+        }
+        triple.vertex->visited = true;
+
+        if (triple.direction == UP) {
+            if (triple.cc == upwardCCSourcePath.size()) {
+                if (sourceTopCCAdjVertices->find(triple.vertex) != sourceTopCCAdjVertices->end()) {
+                    levelEdgesDijkstra(triple, upwardCCTargetPath, Q);
+                }
+                if (targetTopCCAdjVertices->find(triple.vertex) != targetTopCCAdjVertices->end()) {
+                    const Triple newTriple{triple.vertex, DOWN, upwardCCTargetPath.size() - 2u};
+                    downwardEdgesDijkstra(newTriple, upwardCCTargetPath, Q);
+                }
+            }
+            else {
+                upwardEdgesDijkstra(triple, upwardCCSourcePath, Q);
+            }
+        }
+        else { // triple.direction == DOWN
+            downwardEdgesDijkstra(triple, upwardCCTargetPath, Q);
+        }
+    }
+
+    const ULL result = target->dist;
+
+    for (ConnectedComponent * cc: upwardCCSourcePath) {
+        for (Vertex *v: *cc->adjVertices) {
+            v->reset();
+        }
+    }
+    for (ConnectedComponent * cc: upwardCCTargetPath) {
+        for (Vertex *v: *cc->adjVertices) {
+            v->reset();
+        }
+    }
+
+    return result;
+}
+
+vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *vertex0lvl) {
+    vector<ConnectedComponent *> V;
+    ConnectedComponent *cc = (*vertex0lvl->adjCC.begin());
+    while (cc != ConnectedComponent::NULL_OBJECT) {
+        V.push_back(cc);
+        cc = cc->parent;
+    }
+
+    return std::move(V);
+}
+
+void MultilevelGraph::popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2) {
+    while (v1.back() == v2.back()) {
+        v1.pop_back();
+        v2.pop_back();
+    }
+}
+
+void MultilevelGraph::levelEdgesDijkstra(const Triple &triple,
+                                         vector<ConnectedComponent *> &upwardCCTargetPath,
+                                         set<Triple, TripleDijkstraComparator> &Q) const {
+    Vertex *const u = triple.vertex;
+    for (Vertex *v: *upwardCCTargetPath.back()->adjVertices) {
+        auto destIt = u->levelEdges.find(v);
+        if (v->visited || destIt == u->levelEdges.end()) {
+            continue;
+        }
+
+        const ULL newDist = u->dist + destIt->second;
+        if (newDist < v->dist) {
+            const Triple destTriple{v, UP, triple.cc};
+            Q.erase(destTriple);
+            v->dist = newDist;
+            v->parent = u;
+            Q.insert(destTriple);
+        }
+    }
+}
+
+void MultilevelGraph::upwardEdgesDijkstra(const Triple &triple,
+                                          const vector<ConnectedComponent *> &upwardCCSourcePath,
+                                          set<Triple, TripleDijkstraComparator> &Q) const {
+    Vertex *const u = triple.vertex;
+    for (Vertex *v: *upwardCCSourcePath[triple.cc]->adjVertices) {
+        auto destIt = u->upwardEdges.find(v);
+        if (v->visited || destIt == u->upwardEdges.end()) {
+            continue;
+        }
+
+        const ULL newDist = u->dist + destIt->second;
+        if (newDist < v->dist) {
+            const Triple destTriple{v, UP, triple.cc + 1u};
+            Q.erase(destTriple);
+            v->dist = newDist;
+            v->parent = u;
+            Q.insert(destTriple);
+        }
+    }
+}
+
+void MultilevelGraph::downwardEdgesDijkstra(const Triple &newTriple,
+                                            const vector<ConnectedComponent *> &upwardCCTargetPath,
+                                            set<Triple, TripleDijkstraComparator> &Q) const {
+    Vertex *const u = newTriple.vertex;
+    for (Vertex *v: *upwardCCTargetPath[newTriple.cc]->adjVertices) {
+        auto destIt = u->downwardEdges.find(v);
+        if (v->visited || destIt == u->downwardEdges.end()) {
+            continue;
+        }
+
+        const ULL newDist = u->dist + destIt->second;
+        if (newDist < v->dist) {
+            const Triple destTriple{v, DOWN, newTriple.cc - 1u};
+            Q.erase(destTriple);
+            v->dist = newDist;
+            v->parent = u;
+            Q.insert(destTriple);
+        }
+    }
 }

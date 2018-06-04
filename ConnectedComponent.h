@@ -7,20 +7,22 @@
 struct Vertex;
 
 struct ConnectedComponent {
-    static ConnectedComponent* const root;
+    static ConnectedComponent* const ROOT;
+    static ConnectedComponent* const NULL_OBJECT;
     static int idCounter;
     const int id;
     unordered_set<Vertex *> *adjVertices = new unordered_set<Vertex *>{};
     unordered_set<Vertex *> *parentAdjVertices = new unordered_set<Vertex *>{};
-    ConnectedComponent *parent = root;
+    ConnectedComponent *parent = ROOT;
 
     ConnectedComponent();
-
-    explicit ConnectedComponent(int id);
 
     virtual ~ConnectedComponent();
 
     void print();
+
+private:
+    ConnectedComponent(int id, ConnectedComponent *parent);
 };
 
 #endif //BACHELOR_CONNECTEDCOMPONENT_H

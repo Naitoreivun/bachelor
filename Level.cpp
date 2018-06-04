@@ -25,9 +25,7 @@ Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(
 
 struct VertexDijkstraComparator {
     bool operator()(const Vertex *v1, const Vertex *v2) const {
-        return v1->dist == v2->dist
-               ? v1->id < v2->id
-               : v1->dist < v2->dist;
+        return *v1 < *v2;
     }
 };
 
@@ -51,9 +49,7 @@ void Level::calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &
 
 void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) const {
     for (Vertex *v: prevSelectedVertices) {
-        v->dist = INF;
-        v->visited = false;
-        v->parent = nullptr;
+        v->reset();
     }
 
     prevLevelVertex->dist = 0;
@@ -131,18 +127,14 @@ void Level::createConnectedComponents(const unordered_set<ConnectedComponent *> 
 
     for (ConnectedComponent *cc: prevConnectedComponents) {
         if (cc->parentAdjVertices->empty()) {
-//            ConnectedComponent *parentCC = new ConnectedComponent();
+            ConnectedComponent *parentCC = new ConnectedComponent();
             for (Vertex *vertex: *cc->adjVertices) {
                 Vertex *upperVertex = *selectedVertices.find(vertex);
-                // tricky part, when upperVertex knows about new adj CC, but the CC does not know about the upperVertex,
-                // so the upperVertex will be able to tell its CC that it should be merged with other CCs when the time comes,
-                // and there is no additional fake upward or downward edge between cc and upperVertex :)
-                upperVertex->adjCC.insert(cc);
-//                upperVertex->adjCC.insert(parentCC);
+                upperVertex->adjCC.insert(parentCC);
+                parentCC->adjVertices->insert(upperVertex);
             }
-            connectedComponents.insert(cc); // be careful when deleting (duplications in prev levels)
-//            connectedComponents.insert(parentCC);
-//            cc->parent = parentCC;
+            connectedComponents.insert(parentCC);
+            cc->parent = parentCC;
         }
         else {
             ConnectedComponent *parentCC = M[cc->parentAdjVertices];

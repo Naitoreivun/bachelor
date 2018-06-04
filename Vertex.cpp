@@ -12,6 +12,12 @@ void Vertex::addParentAdjVertexForEveryAdjCC(Vertex *const vertex) {
     }
 }
 
+bool Vertex::operator<(const Vertex &rhs) const {
+    return dist == rhs.dist
+           ? id < rhs.id
+           : dist < rhs.dist;
+}
+
 size_t VertexHasher::operator()(const Vertex *v) const {
     return hash<int>()(v->id);
 }

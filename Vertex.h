@@ -32,6 +32,14 @@ struct Vertex {
 
     void addParentAdjVertexForEveryAdjCC(Vertex *vertex);
 
+    bool operator<(const Vertex &rhs) const;
+
+    inline void reset() {
+        parent = nullptr;
+        dist = INF;
+        visited = false;
+    }
+
 private:
     void link(Vertex *dest, ULL weight, unordered_map<Vertex *, ULL> &edges);
 };
