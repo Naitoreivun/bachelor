@@ -76,21 +76,25 @@ void MultilevelGraph::prepareVerticesForQueries() {
 }
 
 ULL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
+    if ((*source->adjCC.begin())->parent == (*target->adjCC.begin())->parent) {
+        return regularDijkstra(source, target);
+    }
+
     vector<ConnectedComponent *> upwardCCSourcePath = getUpwardCCPath(source);
     vector<ConnectedComponent *> upwardCCTargetPath = getUpwardCCPath(target);
     popEveryCommonCCAncestors(upwardCCSourcePath, upwardCCTargetPath);
     auto sourceTopCCAdjVertices = upwardCCSourcePath.back()->adjVertices;
     auto targetTopCCAdjVertices = upwardCCTargetPath.back()->adjVertices;
 
-//    cout << "Source CC path:\n";
-//    for (ConnectedComponent *cc: upwardCCSourcePath) {
-//        cc->print();
-//    }
-//    cout << "Target CC path:\n";
-//    for (ConnectedComponent *cc: upwardCCTargetPath) {
-//        cc->print();
-//    }
-//    cout << endl;
+    cout << "Source CC path:\n";
+    for (ConnectedComponent *cc: upwardCCSourcePath) {
+        cc->print();
+    }
+    cout << "Target CC path:\n";
+    for (ConnectedComponent *cc: upwardCCTargetPath) {
+        cc->print();
+    }
+    cout << endl;
 
     set<Triple, TripleDijkstraComparator> Q;
     source->dist = 0;
@@ -129,12 +133,12 @@ ULL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
 
     const ULL result = target->dist;
 
-    for (ConnectedComponent * cc: upwardCCSourcePath) {
+    for (ConnectedComponent *cc: upwardCCSourcePath) {
         for (Vertex *v: *cc->adjVertices) {
             v->reset();
         }
     }
-    for (ConnectedComponent * cc: upwardCCTargetPath) {
+    for (ConnectedComponent *cc: upwardCCTargetPath) {
         for (Vertex *v: *cc->adjVertices) {
             v->reset();
         }
@@ -222,4 +226,56 @@ void MultilevelGraph::downwardEdgesDijkstra(const Triple &newTriple,
             Q.insert(destTriple);
         }
     }
+}
+
+ULL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
+    if (source == target) {
+        return 0ull;
+    }
+
+    set<Vertex *, VertexDijkstraComparator> Q;
+    vector<Vertex *> affectedVertices;
+
+    source->dist = 0;
+    Q.insert(source);
+
+    while (!Q.empty()) {
+        Vertex *u = *Q.begin();
+        Q.erase(u);
+        affectedVertices.push_back(u);
+        if (u == target) {
+            break;
+        }
+        if (u->visited) {
+            continue;
+        }
+        u->visited = true;
+
+        for (auto edge: u->levelEdges) {
+            Vertex *const dest = edge.first;
+            if (dest->visited) {
+                continue;
+            }
+
+            const ULL newDist = u->dist + edge.second;
+            if (newDist < dest->dist) {
+                Q.erase(dest);
+                dest->dist = newDist;
+                dest->parent = u;
+                Q.insert(dest);
+            }
+        }
+    }
+
+    const ULL result = target->dist;
+    for (Vertex *v : affectedVertices) {
+        v->reset();
+    }
+    while (!Q.empty()) {
+        Vertex *u = *Q.begin();
+        Q.erase(u);
+        u->reset();
+    }
+
+    return result;
 }

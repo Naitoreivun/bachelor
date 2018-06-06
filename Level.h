@@ -32,5 +32,4 @@ private:
     void createConnectedComponents(const unordered_set<ConnectedComponent *> &prevConnectedComponents);
 };
 
-
 #endif //BACHELOR_LEVEL_H

@@ -43,6 +43,8 @@ struct MultilevelGraph {
 
     ULL calculateDistance(Vertex *source, Vertex *target);
 
+    ULL regularDijkstra(Vertex *source, Vertex *target);
+
 private:
     vector<ConnectedComponent *> getUpwardCCPath(Vertex *vertex0lvl);
 

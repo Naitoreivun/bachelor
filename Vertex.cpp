@@ -37,3 +37,7 @@ size_t SetHasher::operator()(const unordered_set<Vertex *> *us) const {
 bool SetComparator::operator()(const unordered_set<Vertex *> *s1, const unordered_set<Vertex *> *s2) const {
     return *s1 == *s2;
 }
+
+bool VertexDijkstraComparator::operator()(const Vertex *v1, const Vertex *v2) const {
+    return *v1 < *v2;
+}

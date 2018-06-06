@@ -12,6 +12,8 @@ void init();
 
 vector<Vertex *> getVerticesSortedByDegree();
 
+ULL calculateDistance(int v1, int v2, MultilevelGraph &M);
+
 int main() {
     cout << "start" << endl;
     init();
@@ -27,13 +29,22 @@ int main() {
 
     M.printAll();
     M.printConnectedComponents();
+    calculateDistance(1, 11, M);
+    calculateDistance(11, 1, M);
+    calculateDistance(7, 11, M);
+    calculateDistance(4, 11, M);
+    calculateDistance(3, 10, M);
+    calculateDistance(7, 5, M);
+    calculateDistance(5, 7, M);
+    calculateDistance(1, 500, M);
 
-    cout << M.calculateDistance(originalVertices[0], originalVertices[10]) << endl; // 1 -> 11
-    cout << M.calculateDistance(originalVertices[10], originalVertices[0]) << endl; // 11 -> 1
-    cout << M.calculateDistance(originalVertices[6], originalVertices[10]) << endl; // 7 -> 11
-    cout << M.calculateDistance(originalVertices[3], originalVertices[10]) << endl; // 4 -> 11
-    cout << M.calculateDistance(originalVertices[2], originalVertices[9]) << endl; // 3 -> 10
-    cout << M.calculateDistance(originalVertices[6], originalVertices[4]) << endl; // 7 -> 5
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            calculateDistance(i, j, M);
+        }
+    }
+
+    calculateDistance(1, 3, M);
 
     cout << "finish";
     return 0;
@@ -86,4 +97,16 @@ vector<Vertex *> getVerticesSortedByDegree() {
 //        cout << v->id << ": " << degrees[v->id] << endl;
 //    }
     return result;
+}
+
+ULL calculateDistance(int v1, int v2, MultilevelGraph &M) {
+    const auto source = originalVertices[v1 - 1];
+    const auto target = originalVertices[v2 - 1];
+    const auto multi = M.calculateDistance(source, target);
+    const auto reg = M.regularDijkstra(source, target);
+
+    cout << v1 << " -> " << v2 << ":\n\tMLD -> " << multi << "\n\tREG -> " << reg << endl;
+    if (multi != reg) {
+        cout << "   @@@@@@@@@@@@@@ ERROR @@@@@@@@@@@" << endl;
+    }
 }

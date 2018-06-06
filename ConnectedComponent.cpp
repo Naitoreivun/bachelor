@@ -17,7 +17,7 @@ ConnectedComponent::ConnectedComponent(const int id, ConnectedComponent *parent)
 void ConnectedComponent::print() {
     cout << id << " (p: " << parent->id << "):";
     for (Vertex *v: *adjVertices) {
-        cout << " " << v->id;
+        cout << " " << v->id << "(" << v << ")";
     }
     cout << endl;
 }

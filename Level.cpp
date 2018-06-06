@@ -23,12 +23,6 @@ Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(
     createConnectedComponents(prevLevel.connectedComponents);
 }
 
-struct VertexDijkstraComparator {
-    bool operator()(const Vertex *v1, const Vertex *v2) const {
-        return *v1 < *v2;
-    }
-};
-
 void Level::calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) {
 
     dijkstra(prevLevelVertex, prevSelectedVertices);

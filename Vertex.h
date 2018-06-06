@@ -63,5 +63,8 @@ struct SetComparator {
     bool operator()(const unordered_set<Vertex *> *s1, const unordered_set<Vertex *> *s2) const;
 };
 
+struct VertexDijkstraComparator {
+    bool operator()(const Vertex *v1, const Vertex *v2) const;
+};
 
 #endif //BACHELOR_VERTEX_H
