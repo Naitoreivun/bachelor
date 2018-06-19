@@ -4,25 +4,20 @@
 #include "imports_and_configs.h"
 #include "Level.h"
 
-enum Direction {
-    UP = 0, DOWN = 1
-};
-
-struct Triple {
+struct VertexAndLevel {
     Vertex *vertex;
-    Direction direction;
-    unsigned int cc;
+    unsigned int level;
 public:
-    Triple(Vertex *vertex, Direction direction, unsigned int cc) : vertex(vertex), direction(direction), cc(cc) {}
+    VertexAndLevel(Vertex *vertex, unsigned int level) : vertex(vertex), level(level) {}
 };
 
-struct TripleDijkstraComparator {
-    bool operator()(const Triple &t1, const Triple &t2) const {
+struct VertexAndLevelDijkstraComparator {
+    bool operator()(const VertexAndLevel &t1, const VertexAndLevel &t2) const {
         Vertex *const v1 = t1.vertex;
         Vertex *const v2 = t2.vertex;
         return v1->dist == v2->dist
                ? (v1->id == v2->id
-                  ? t1.cc < t2.cc
+                  ? t1.level < t2.level
                   : v1->id < v2->id)
                : v1->dist < v2->dist;
     }
@@ -50,17 +45,22 @@ private:
 
     void popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2);
 
-    void levelEdgesDijkstra(const Triple &triple,
+    void levelEdgesDijkstra(const VertexAndLevel &triple,
                             vector<ConnectedComponent *> &upwardCCTargetPath,
-                            set<Triple, TripleDijkstraComparator> &Q) const;
+                            set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
 
-    void upwardEdgesDijkstra(const Triple &triple,
+    void upwardEdgesDijkstra(const VertexAndLevel &triple,
                              const vector<ConnectedComponent *> &upwardCCSourcePath,
-                             set<Triple, TripleDijkstraComparator> &Q) const;
+                             set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
 
-    void downwardEdgesDijkstra(const Triple &newTriple,
+    void downwardEdgesDijkstra(const VertexAndLevel &newTriple,
                                const vector<ConnectedComponent *> &upwardCCTargetPath,
-                               set<Triple, TripleDijkstraComparator> &Q) const;
+                               set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+
+    void printCCPaths(const vector<ConnectedComponent *> &upwardCCSourcePath,
+                      const vector<ConnectedComponent *> &upwardCCTargetPath) const;
+
+    void printPathFromSourceToTarget(Vertex *source, Vertex *target);
 };
 
 #endif //BACHELOR_MULTILEVELGRAPH_H

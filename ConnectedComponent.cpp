@@ -15,7 +15,7 @@ ConnectedComponent::ConnectedComponent() : ConnectedComponent(++idCounter, ROOT)
 ConnectedComponent::ConnectedComponent(const int id, ConnectedComponent *parent) : id(id), parent(parent) {}
 
 void ConnectedComponent::print() {
-    cout << id << " (p: " << parent->id << "):";
+    cout << id << " (p: " << parent->id << ", " << SetHasher{}(adjVertices) << "):";
     for (Vertex *v: *adjVertices) {
         cout << " " << v->id << "(" << v << ")";
     }

@@ -23,9 +23,30 @@ Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(
     createConnectedComponents(prevLevel.connectedComponents);
 }
 
+void printPathFromSourceToTarget(Vertex *source, Vertex *target) {
+    if (source != target) {
+        printPathFromSourceToTarget(source, target->parent);
+    }
+    else {
+        cout << endl;
+    }
+    cout << " -> " << target->id << "(" << target << ", " << target->dist << ")";
+}
+
 void Level::calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) {
 
     dijkstra(prevLevelVertex, prevSelectedVertices);
+    
+//    if (value == 2 && prevLevelVertex->id == 18) {
+//        Vertex *const &v4 = *prevSelectedVertices.find(new Vertex(4));
+//        Vertex *const &v254 = *prevSelectedVertices.find(new Vertex(254));
+//        cout << endl << endl;
+//        printPathFromSourceToTarget(prevLevelVertex, v4);
+//        cout << endl << endl;
+//        printPathFromSourceToTarget(prevLevelVertex, v254);
+//        cout << endl << endl;
+//    }
+//
     pickEdgesForNewLevel(prevLevelVertex);
 
 //    cout << endl << prevLevelVertex->id << ":" << endl;

@@ -1,6 +1,6 @@
 #include "Vertex.h"
 
-Vertex::Vertex(int id) : id(id), visited(false), dist(0ull), parent(nullptr) {}
+Vertex::Vertex(int id) : id(id), visited(false), dist(0ull), parent(nullptr), upper(nullptr), lower(nullptr) {}
 
 void Vertex::link(Vertex *dest, ULL weight, unordered_map<Vertex *, ULL> &edges) {
     edges[dest] = weight;
@@ -29,7 +29,8 @@ bool VertexComparator::operator()(const Vertex *v1, const Vertex *v2) const {
 size_t SetHasher::operator()(const unordered_set<Vertex *> *us) const {
     size_t seed = us->size();
     for (Vertex *v : *us) {
-        seed ^= hash<Vertex *>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+//        seed ^= hash<Vertex *>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2); // fixme
+        seed += hash<Vertex *>()(v);
     }
     return seed;
 }

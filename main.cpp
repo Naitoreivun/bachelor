@@ -12,7 +12,9 @@ void init();
 
 vector<Vertex *> getVerticesSortedByDegree();
 
-ULL calculateDistance(int v1, int v2, MultilevelGraph &M);
+bool calculateDistance(int v1, int v2, MultilevelGraph &M);
+
+void calculate(MultilevelGraph &M);
 
 int main() {
     cout << "start" << endl;
@@ -29,31 +31,47 @@ int main() {
 
     M.printAll();
     M.printConnectedComponents();
-    calculateDistance(1, 11, M);
-    calculateDistance(11, 1, M);
-    calculateDistance(7, 11, M);
-    calculateDistance(4, 11, M);
-    calculateDistance(3, 10, M);
-    calculateDistance(7, 5, M);
-    calculateDistance(5, 7, M);
-    calculateDistance(1, 500, M);
+//    calculateDistance(1, 11, M);
+//    calculateDistance(11, 1, M);
+//    calculateDistance(7, 11, M);
+//    calculateDistance(4, 11, M);
+//    calculateDistance(3, 10, M);
+//    calculateDistance(7, 5, M);
+//    calculateDistance(5, 7, M);
+//    calculateDistance(1, 500, M);
+//
+//    calculate(M);
 
-    for (int i = 1; i <= n; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            calculateDistance(i, j, M);
-        }
-    }
+    calculateDistance(4, 5, M); // USairport500.in airportDebug2
+//    calculateDistance(4, 3, M); // airportDebug2
+//    calculateDistance(4, 254, M); // USairport500.in
+//    calculateDistance(5, 11, M);
 
-    calculateDistance(1, 3, M);
-
-    cout << "finish";
+    cout << "finish" << endl;
     return 0;
 }
 
+void calculate(MultilevelGraph &M) {
+    bool ok = true;
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            ok &= calculateDistance(i, j, M);
+        }
+        cout << i << " -> " << ok << "\n";
+    }
+    cout << "\n" << (ok ? "Tests passed" : "Some tests failed") << endl;
+}
+
 void init() {
+//    const char *const filename = "../tests/airportDebug.in";
+//    const char *const filename = "../tests/airportDebug2.in";
+    const char *const filename = "../tests/airportDebug3.in";
 //    const char *const filename = "../tests/USairport500.in";
-    const char *const filename = "../tests/test.in";
+//    const char *const filename = "../tests/test.in";
 //    const char *const filename = "../tests/test2.in";
+//    const char *const filename = "../tests/test3.in";
+//    const char *const filename = "../tests/test4.in";
+//    const char *const filename = "../tests/pile.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -99,14 +117,19 @@ vector<Vertex *> getVerticesSortedByDegree() {
     return result;
 }
 
-ULL calculateDistance(int v1, int v2, MultilevelGraph &M) {
+bool calculateDistance(int v1, int v2, MultilevelGraph &M) {
     const auto source = originalVertices[v1 - 1];
     const auto target = originalVertices[v2 - 1];
     const auto multi = M.calculateDistance(source, target);
     const auto reg = M.regularDijkstra(source, target);
 
-    cout << v1 << " -> " << v2 << ":\n\tMLD -> " << multi << "\n\tREG -> " << reg << endl;
     if (multi != reg) {
-        cout << "   @@@@@@@@@@@@@@ ERROR @@@@@@@@@@@" << endl;
+        cout << v1 << " -> " << v2 << " --- ERROR:\n\tMLD -> "
+             << multi << "\n\tREG -> " << reg << "\n";
+        return false;
+    }
+    else {
+        cout << v1 << " -> " << v2 << " --- OK ( " << reg << " )\n";
+        return true;
     }
 }

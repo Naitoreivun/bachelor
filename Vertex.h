@@ -15,6 +15,8 @@ struct Vertex {
     unordered_map<Vertex *, ULL> upwardEdges;
     unordered_map<Vertex *, ULL> downwardEdges;
     unordered_set<ConnectedComponent *> adjCC;
+    Vertex *upper;
+    Vertex *lower;
 
     explicit Vertex(int id);
 
