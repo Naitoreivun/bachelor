@@ -17,7 +17,7 @@ struct VertexAndLevelDijkstraComparator {
         Vertex *const v2 = t2.vertex;
         return v1->dist == v2->dist
                ? (v1->id == v2->id
-                  ? t1.level < t2.level
+                  ? t1.level < t2.level //todo speedup
                   : v1->id < v2->id)
                : v1->dist < v2->dist;
     }
@@ -40,6 +40,8 @@ struct MultilevelGraph {
 
     ULL regularDijkstra(Vertex *source, Vertex *target);
 
+    void createConnectedComponents();
+
 private:
     vector<ConnectedComponent *> getUpwardCCPath(Vertex *vertex0lvl);
 
@@ -61,6 +63,16 @@ private:
                       const vector<ConnectedComponent *> &upwardCCTargetPath) const;
 
     void printPathFromSourceToTarget(Vertex *source, Vertex *target);
+
+    void createConnectedComponentsForLevelZero();
+
+    void createConnectedComponentsForLevel(int levelValue);
+
+    void createConnectedComponent(Vertex *vertex, Level &prevLevel, Level &currentLevel);
+
+    void processAdjVertexInBfs(Level &currentLevel, queue<Vertex *> &Q, ConnectedComponent *cc, Vertex *v);
+
+    void duplicateConnectedComponentsWithNoParent(Level &prevLevel, Level &currentLevel);
 };
 
 #endif //BACHELOR_MULTILEVELGRAPH_H

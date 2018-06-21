@@ -3,14 +3,6 @@
 
 Level::Level(const int value, VertexSet selectedVertices) : value(value),
                                                             selectedVertices(std::move(selectedVertices)) {
-    if (value == 0) {
-        for (Vertex *v: this->selectedVertices) {
-            auto *cc = new ConnectedComponent();
-            cc->adjVertices->insert(v);
-            v->adjCC.insert(cc);
-            connectedComponents.insert(cc);
-        }
-    }
 }
 
 Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(prevLevel.value + 1, selectedVertices) {
@@ -20,7 +12,6 @@ Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(
     for (Vertex *prevLevelVertex: prevSelectedVertices) {
         calculateShortestPathTree(prevLevelVertex, prevSelectedVertices);
     }
-    createConnectedComponents(prevLevel.connectedComponents);
 }
 
 void printPathFromSourceToTarget(Vertex *source, Vertex *target) {
@@ -36,7 +27,7 @@ void printPathFromSourceToTarget(Vertex *source, Vertex *target) {
 void Level::calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) {
 
     dijkstra(prevLevelVertex, prevSelectedVertices);
-    
+
 //    if (value == 2 && prevLevelVertex->id == 18) {
 //        Vertex *const &v4 = *prevSelectedVertices.find(new Vertex(4));
 //        Vertex *const &v254 = *prevSelectedVertices.find(new Vertex(254));
@@ -115,12 +106,12 @@ void Level::pickEdgesForNewLevel(Vertex *prevLevelVertex) {
             }
             else {
                 (*selectedVertexIt)->linkDown(v, v->dist); // downward edge
-                v->addParentAdjVertexForEveryAdjCC(*selectedVertexIt);
+//                v->addParentAdjVertexForEveryAdjCC(*selectedVertexIt);
             }
         }
         else if (isDestSelectedVertex) {
             prevLevelVertex->linkUp(*destSelectedVertexIt, v->dist); // upward edge
-            prevLevelVertex->addParentAdjVertexForEveryAdjCC(*destSelectedVertexIt);
+//            prevLevelVertex->addParentAdjVertexForEveryAdjCC(*destSelectedVertexIt);
         }
 
         if (!isDestSelectedVertex) {
@@ -137,34 +128,8 @@ void Level::addChildrenToQueue(Vertex *parent, std::queue<Vertex *> &Q) {
     }
 }
 
-void Level::createConnectedComponents(const unordered_set<ConnectedComponent *> &prevConnectedComponents) {
-    unordered_map<unordered_set<Vertex *> *, ConnectedComponent *, SetHasher, SetComparator> M;
-
-    for (ConnectedComponent *cc: prevConnectedComponents) {
-        if (cc->parentAdjVertices->empty()) {
-            ConnectedComponent *parentCC = new ConnectedComponent();
-            for (Vertex *vertex: *cc->adjVertices) {
-                Vertex *upperVertex = *selectedVertices.find(vertex);
-                upperVertex->adjCC.insert(parentCC);
-                parentCC->adjVertices->insert(upperVertex);
-            }
-            connectedComponents.insert(parentCC);
-            cc->parent = parentCC;
-        }
-        else {
-            ConnectedComponent *parentCC = M[cc->parentAdjVertices];
-            if (parentCC == nullptr) {
-                parentCC = new ConnectedComponent();
-
-                for (Vertex *upperVertex: *cc->parentAdjVertices) {
-                    upperVertex->adjCC.insert(parentCC);
-                }
-                *parentCC->adjVertices = *cc->parentAdjVertices;
-
-                connectedComponents.insert(parentCC);
-                M[cc->parentAdjVertices] = parentCC;
-            }
-            cc->parent = parentCC;
-        }
-    }
+void Level::bindCCWithSelectedVertex(ConnectedComponent *cc, Vertex *prevVertex) const {
+    Vertex *selectedVertex = *selectedVertices.find(prevVertex);
+    cc->adjVertices.insert(selectedVertex);
+    selectedVertex->adjCC.insert(cc);
 }

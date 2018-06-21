@@ -20,6 +20,18 @@ struct Level {
 
     Level(const VertexSet &selectedVertices, const Level &prevLevel);
 
+    inline void resetVertices() {
+        for (Vertex *v: selectedVertices) {
+            v->reset();
+        }
+    }
+
+    inline bool isSelectedVertex(Vertex *vertex) {
+        return selectedVertices.find(vertex) != selectedVertices.end();
+    }
+
+    void bindCCWithSelectedVertex(ConnectedComponent *cc, Vertex *prevVertex) const;
+
 private:
     void calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices);
 
@@ -28,8 +40,6 @@ private:
     void pickEdgesForNewLevel(Vertex *prevLevelVertex);
 
     void addChildrenToQueue(Vertex *parent, queue<Vertex *> &Q);
-
-    void createConnectedComponents(const unordered_set<ConnectedComponent *> &prevConnectedComponents);
 };
 
 #endif //BACHELOR_LEVEL_H

@@ -12,6 +12,7 @@ struct Vertex {
     ULL dist;
     Vertex *parent;
     unordered_map<Vertex *, ULL> levelEdges;
+    unordered_set<Vertex *> reversedLevelEdges; // useful for finding connected components
     unordered_map<Vertex *, ULL> upwardEdges;
     unordered_map<Vertex *, ULL> downwardEdges;
     unordered_set<ConnectedComponent *> adjCC;
@@ -24,6 +25,11 @@ struct Vertex {
         link(dest, weight, levelEdges);
     }
 
+    inline void linkBackAndForth(Vertex *dest, ULL weight) {
+        link(dest, weight, levelEdges);
+        dest->reversedLevelEdges.insert(this);
+    }
+
     inline void linkUp(Vertex *dest, ULL weight) {
         link(dest, weight, upwardEdges);
     }
@@ -32,7 +38,7 @@ struct Vertex {
         link(dest, weight, downwardEdges);
     }
 
-    void addParentAdjVertexForEveryAdjCC(Vertex *vertex);
+//    void addParentAdjVertexForEveryAdjCC(Vertex *vertex);
 
     bool operator<(const Vertex &rhs) const;
 
@@ -57,13 +63,13 @@ struct VertexComparator {
 
 // https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector/27216842#27216842
 // https://stackoverflow.com/a/27216842
-struct SetHasher {
-    size_t operator()(const unordered_set<Vertex *> *us) const;
-};
-
-struct SetComparator {
-    bool operator()(const unordered_set<Vertex *> *s1, const unordered_set<Vertex *> *s2) const;
-};
+//struct SetHasher {
+//    size_t operator()(const unordered_set<Vertex *> *us) const;
+//};
+//
+//struct SetComparator {
+//    bool operator()(const unordered_set<Vertex *> *s1, const unordered_set<Vertex *> *s2) const;
+//};
 
 struct VertexDijkstraComparator {
     bool operator()(const Vertex *v1, const Vertex *v2) const;
