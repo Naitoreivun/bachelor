@@ -150,7 +150,8 @@ void benchmark(MultilevelGraph &M) {
 
     cout << "reg start\n";
     milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= n/5; ++i) {
+    const int iEnd = n / 5;
+    for (int i = 1; i <= iEnd; ++i) {
         for (int j = 1; j <= n; ++j) {
             M.regularDijkstra(originalVertices[i - 1], originalVertices[j - 1]);
         }
@@ -161,7 +162,7 @@ void benchmark(MultilevelGraph &M) {
 
     cout << "mul start\n";
     milliseconds startMul = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= n/5; ++i) {
+    for (int i = 1; i <= iEnd; ++i) {
         for (int j = 1; j <= n; ++j) {
             M.calculateDistance(originalVertices[i - 1], originalVertices[j - 1]);
         }
