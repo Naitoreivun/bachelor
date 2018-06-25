@@ -1,7 +1,7 @@
 #ifndef BACHELOR_MULTILEVELGRAPH_H
 #define BACHELOR_MULTILEVELGRAPH_H
 
-#include "imports_and_configs.h"
+#include "../imports_and_configs.h"
 #include "Level.h"
 
 struct VertexAndLevel {

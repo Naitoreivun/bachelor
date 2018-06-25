@@ -1,7 +1,7 @@
 #ifndef BACHELOR_CONNECTEDCOMPONENT_H
 #define BACHELOR_CONNECTEDCOMPONENT_H
 
-#include "imports_and_configs.h"
+#include "../imports_and_configs.h"
 #include "Vertex.h"
 
 struct Vertex;

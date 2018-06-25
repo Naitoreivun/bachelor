@@ -1,7 +1,7 @@
 #ifndef BACHELOR_LEVEL_H
 #define BACHELOR_LEVEL_H
 
-#include "imports_and_configs.h"
+#include "../imports_and_configs.h"
 #include "Vertex.h"
 #include "ConnectedComponent.h"
 #include <set>
