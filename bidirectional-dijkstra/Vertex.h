@@ -5,9 +5,10 @@
 
 struct ConnectedComponent;
 
+const int FORWARD = 0;
+const int BACKWARD = 1;
+
 struct Vertex {
-    static const int FORWARD = 0;
-    static const int BACKWARD = 1;
     const int id;
     bool visited[2];
     ULL dist[2];
@@ -21,24 +22,23 @@ struct Vertex {
         dest->edges[BACKWARD][this] = weight;
     }
 
-    inline bool operator<(const Vertex &rhs) const {
-        return dist == rhs.dist
-               ? id < rhs.id
-               : dist < rhs.dist;
-    };
-
     inline void reset() {
-        parent[FORWARD] = nullptr;
-        dist[FORWARD] = INF;
-        visited[FORWARD] = false;
+        reset(FORWARD);
+        reset(BACKWARD);
+    }
 
-        parent[BACKWARD] = nullptr;
-        dist[BACKWARD] = INF;
-        visited[BACKWARD] = false;
+    inline void reset(const int direction) {
+        parent[direction] = nullptr;
+        dist[direction] = INF;
+        visited[direction] = false;
     }
 };
 
-struct VertexDijkstraComparator {
+struct VertexDijkstraForwardComparator {
+    bool operator()(const Vertex *v1, const Vertex *v2) const;
+};
+
+struct VertexDijkstraBackwardComparator {
     bool operator()(const Vertex *v1, const Vertex *v2) const;
 };
 

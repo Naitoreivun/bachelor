@@ -1,1 +1,1 @@
-add_executable(bidi main.cpp Vertex.h Vertex.cpp)
+add_executable(bidi main.cpp Vertex.h Vertex.cpp BidirectionalDijkstra.cpp BidirectionalDijkstra.h)

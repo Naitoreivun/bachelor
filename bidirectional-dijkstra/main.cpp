@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <chrono>
 #include "Vertex.h"
+#include "BidirectionalDijkstra.h"
 
 int n, m;
 vector<Vertex *> graph;
@@ -22,9 +23,9 @@ int main() {
     init();
     cout << "original graph loaded" << endl;
 
-    calculate();
+//    calculate();
 
-//    benchmark();
+    benchmark();
 
     cout << "finish" << endl;
     return 0;
@@ -34,7 +35,7 @@ void calculate() {
     bool ok = true;
     for (int i = 1; i <= n; ++i) {
         for (int j = 1; j <= n; ++j) {
-//            ok &= calculateDistance(i, j, M);
+            ok &= calculateDistance(i, j);
         }
         cout << i << " -> " << (ok ? "\t\t JAK NA RAZIE SPOKO" : "\t\t COS SIE ZEPSULO :(") << "\n";
     }
@@ -42,15 +43,15 @@ void calculate() {
 }
 
 void init() {
-//    const char *const filename = "../../tests/airportDebug.in";
-//    const char *const filename = "../../tests/airportDebug2.in";
-//    const char *const filename = "../../tests/airportDebug3.in";
-//    const char *const filename = "../../tests/USairport500.in";
-    const char *const filename = "../../tests/test.in";
+//    const char *const filename = "../../tests/test.in";
 //    const char *const filename = "../../tests/test2.in";
 //    const char *const filename = "../../tests/test3.in";
 //    const char *const filename = "../../tests/test4.in";
 //    const char *const filename = "../../tests/pile.in";
+//    const char *const filename = "../../tests/airportDebug.in";
+//    const char *const filename = "../../tests/airportDebug2.in";
+//    const char *const filename = "../../tests/airportDebug3.in";
+    const char *const filename = "../../tests/USairport500.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -85,36 +86,47 @@ bool calculateDistance(int v1, int v2) {
     const auto source = graph[v1 - 1];
     const auto target = graph[v2 - 1];
 
-//    return multi == reg;
-    return 0;
+
+    const auto bidi = bidirectionalDijkstra(graph, source, target);
+    const auto reg = regularDijkstra(graph, source, target);
+
+//    if (bidi != reg) {
+//        cout << v1 << " -> " << v2 << " --- ERROR:\n\tBIDI -> " << bidi << "\n\tREG -> " << reg << "\n";
+//        return false;
+//    }
+//    else {
+//        cout << v1 << " -> " << v2 << " --- OK ( " << reg << " )\n";
+//        return true;
+//    }
+    return bidi == reg;
 }
 
 
 void benchmark() {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
+    const int iEnd = n / 5;
 
     cout << "reg start\n";
     milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    const int iEnd = n / 5;
     for (int i = 1; i <= iEnd; ++i) {
         for (int j = 1; j <= n; ++j) {
-//            M.regularDijkstra(originalVertices[i - 1], originalVertices[j - 1]);
+            regularDijkstra(graph, graph[i - 1], graph[j - 1]);
         }
-        cout << i  << " ";
+        cout << i << " ";
     }
     milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
 
-    cout << "mul start\n";
-    milliseconds startMul = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "bidi start\n";
+    milliseconds startBidi = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     for (int i = 1; i <= iEnd; ++i) {
         for (int j = 1; j <= n; ++j) {
-//            M.calculateDistance(originalVertices[i - 1], originalVertices[j - 1]);
+            bidirectionalDijkstra(graph, graph[i - 1], graph[j - 1]);
         }
-        cout << i  << " ";
+        cout << i << " ";
     }
-    milliseconds stopMul = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    cout << "\nmul stop:\n\t" << (stopMul.count() - startMul.count()) << "\n\n";
+    milliseconds stopBidi = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\nbidi stop:\n\t" << (stopBidi.count() - startBidi.count()) << "\n\n";
 
 }
