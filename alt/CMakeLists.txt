@@ -1,0 +1,1 @@
+add_executable(alt main.cpp Vertex.cpp Vertex.h alt.cpp alt.h)

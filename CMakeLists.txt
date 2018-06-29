@@ -6,3 +6,4 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(multi-level-dijkstra)
 add_subdirectory(bidirectional-dijkstra)
+add_subdirectory(alt)

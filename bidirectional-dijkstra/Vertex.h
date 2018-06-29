@@ -3,8 +3,6 @@
 
 #include "../imports_and_configs.h"
 
-struct ConnectedComponent;
-
 const int FORWARD = 0;
 const int BACKWARD = 1;
 
