@@ -51,7 +51,8 @@ void init() {
 //    const char *const filename = "../../tests/airportDebug.in";
 //    const char *const filename = "../../tests/airportDebug2.in";
 //    const char *const filename = "../../tests/airportDebug3.in";
-    const char *const filename = "../../tests/USairport500.in";
+//    const char *const filename = "../../tests/USairport500.in";
+    const char *const filename = "../../tests/california.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -105,7 +106,8 @@ bool calculateDistance(int v1, int v2) {
 void benchmark() {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
-    const int iEnd = n / 5;
+//    const int iEnd = n / 5;
+    const int iEnd = n / 400;
 
     cout << "reg start\n";
     milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());

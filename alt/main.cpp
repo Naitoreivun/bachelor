@@ -7,7 +7,7 @@
 
 int n, m;
 vector<Vertex *> graph;
-const int DEFAULT_LANDMARKS_COUNT = 3;
+const int DEFAULT_LANDMARKS_COUNT = 2;
 
 void init();
 
@@ -31,10 +31,9 @@ int main() {
 
 //    printLandmarkDistances();
 
-    calculate(alt);
-//    calculateDistance(alt, 1, 8);
+//    calculate(alt);
 
-//    benchmark(alt);
+    benchmark(alt);
 
     cout << "finish" << endl;
     return 0;
@@ -50,6 +49,7 @@ void init() {
 //    const char *const filename = "../../tests/airportDebug2.in";
 //    const char *const filename = "../../tests/airportDebug3.in";
     const char *const filename = "../../tests/USairport500.in";
+//    const char *const filename = "../../tests/california.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -95,8 +95,8 @@ bool calculateDistance(Alt &alt, int v1, int v2) {
     const auto source = graph[v1 - 1];
     const auto target = graph[v2 - 1];
 
-    const ULL altDist = alt.altDijkstra(graph, source, target);
-    const ULL regDist = alt.regularDijkstra(graph, source, target);
+    const ULL altDist = alt.altDijkstra(source, target);
+    const ULL regDist = alt.regularDijkstra(source, target);
 
 //    if (altDist != regDist) {
 //        cout << v1 << " -> " << v2 << " --- ERROR:\n\tALT -> " << altDist << "\n\tREG -> " << regDist << "\n";
@@ -115,28 +115,29 @@ void benchmark(Alt &alt) {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
     const int iEnd = n / 5;
+//    const int iEnd = n / 400;
 
     cout << "reg start\n";
     milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     for (int i = 1; i <= iEnd; ++i) {
         for (int j = 1; j <= n; ++j) {
-//            regularDijkstra(graph, graph[i - 1], graph[j - 1]);
+            alt.regularDijkstra(graph[i - 1], graph[j - 1]);
         }
         cout << i << " ";
     }
     milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
 
-    cout << "bidi start\n";
-    milliseconds startBidi = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "alt start\n";
+    milliseconds startAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     for (int i = 1; i <= iEnd; ++i) {
         for (int j = 1; j <= n; ++j) {
-//            bidirectionalDijkstra(graph, graph[i - 1], graph[j - 1]);
+            alt.altDijkstra(graph[i - 1], graph[j - 1]);
         }
         cout << i << " ";
     }
-    milliseconds stopBidi = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    cout << "\nbidi stop:\n\t" << (stopBidi.count() - startBidi.count()) << "\n\n";
+    milliseconds stopAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\nalt stop:\n\t" << (stopAlt.count() - startAlt.count()) << "\n\n";
 
 }
 
