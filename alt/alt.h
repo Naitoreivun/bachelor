@@ -5,8 +5,9 @@
 #include "Vertex.h"
 
 struct Alt {
-    unordered_set<Vertex *> landmarks;
-    vector<Vertex*> *graph;
+    vector<Vertex *> landmarks;
+    unordered_map<Vertex *, int> landmarkIds;
+    vector<Vertex *> *graph;
 
     Alt(vector<Vertex *> &graph, int landmarksCount);
 
@@ -15,22 +16,60 @@ struct Alt {
     ULL regularDijkstra(Vertex *source, Vertex *target);
 
 private:
-    void selectLandmarks( int landmarksCount);
+    void selectLandmarks(int landmarksCount);
 
-    void findNewFarthestLandmark(const unordered_set<Vertex *> &currentLandmarks);
+    void findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks);
 
-    void calculateLandmarkDistances(Vertex *landmark,  int direction);
+    void calculateLandmarkDistances(int landmarkId, int direction);
 
-    ULL heuristic(Vertex *v, Vertex *t);
+    inline vector<int> selectActiveLandmarks(Vertex *source, Vertex *target) {
+        vector<int> result = {0, 0};
 
-    inline vector<Vertex *> selectActiveLandmarks(Vertex *source, Vertex *target) {
-//        vector<Vertex *> result = {*landmarks.begin(), *landmarks.begin()};
+        for (int landmarkId = 1; landmarkId < landmarks.size(); ++landmarkId) {
+            if (target->landmarkDist[FROM][landmarkId] - source->landmarkDist[FROM][landmarkId] >
+                target->landmarkDist[FROM][result[FROM]] - source->landmarkDist[FROM][result[FROM]]) {
+                result[FROM] = landmarkId;
+            }
+            if (source->landmarkDist[TO][landmarkId] - target->landmarkDist[TO][landmarkId] >
+                source->landmarkDist[TO][result[TO]] - target->landmarkDist[TO][result[TO]]) {
+                result[TO] = landmarkId;
+            }
+        }
+
+        return result;
+    }
+
+    inline ULL heuristic(Vertex *v, Vertex *t, const vector<int> &activeLandmarkIds) {
+        if (v == t) {
+            return 0ll;
+        }
+
+//    auto vLandmarkIt = landmarkIds.find(v);
+//    if (vLandmarkIt != landmarkIds.end()) {
+//        return t->landmarkDist[FROM][vLandmarkIt->second];
+//    }
 //
-//        for (Vertex *landmark: landmarks) {
-//            if ()
-//        }
-//
-//        return move(result);
+//    auto tLandmarkIt = landmarkIds.find(t);
+//    if (tLandmarkIt != landmarkIds.end()) {
+//        return v->landmarkDist[TO][tLandmarkIt->second];
+//    }
+
+        ULL result = 0ll;
+        for (int landmarkId: activeLandmarkIds) {
+            const ULL fromDiff = t->landmarkDist[FROM][landmarkId] - v->landmarkDist[FROM][landmarkId];
+            const ULL toDiff = v->landmarkDist[TO][landmarkId] - t->landmarkDist[TO][landmarkId];
+
+            if (fromDiff > toDiff) {
+                if (fromDiff > result) {
+                    result = fromDiff;
+                }
+            }
+            else if (toDiff > result) {
+                result = toDiff;
+            }
+        }
+
+        return result;
     }
 };
 

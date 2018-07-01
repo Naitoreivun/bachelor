@@ -7,7 +7,7 @@
 
 int n, m;
 vector<Vertex *> graph;
-const int DEFAULT_LANDMARKS_COUNT = 2;
+const int DEFAULT_LANDMARKS_COUNT = 16;
 
 void init();
 
@@ -117,17 +117,6 @@ void benchmark(Alt &alt) {
     const int iEnd = n / 5;
 //    const int iEnd = n / 400;
 
-    cout << "reg start\n";
-    milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= iEnd; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            alt.regularDijkstra(graph[i - 1], graph[j - 1]);
-        }
-        cout << i << " ";
-    }
-    milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
-
     cout << "alt start\n";
     milliseconds startAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     for (int i = 1; i <= iEnd; ++i) {
@@ -139,18 +128,31 @@ void benchmark(Alt &alt) {
     milliseconds stopAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nalt stop:\n\t" << (stopAlt.count() - startAlt.count()) << "\n\n";
 
+    cout << "reg start\n";
+    milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    for (int i = 1; i <= iEnd; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            alt.regularDijkstra(graph[i - 1], graph[j - 1]);
+        }
+        cout << i << " ";
+    }
+    milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
+
 }
 
 void printLandmarkDistances() {
     for (Vertex *v: graph) {
         cout << v->id << ":\n";
         cout << "FROM:\n";
-        for (auto edge: v->landmarkDist[FROM]) {
-            cout << "\t" << edge.first->id << " -> " << edge.second << "\n";
+        int i = 0;
+        for (ULL dist: v->landmarkDist[FROM]) {
+            cout << "\t" << i++ << " -> " << dist << "\n";
         }
         cout << "TO:\n";
-        for (auto edge: v->landmarkDist[TO]) {
-            cout << "\t" << edge.first->id << " -> " << edge.second << "\n";
+        i = 0;
+        for (ULL dist: v->landmarkDist[TO]) {
+            cout << "\t" << i++ << " -> " << dist << "\n";
         }
         cout << endl;
     }

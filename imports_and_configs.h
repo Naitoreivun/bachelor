@@ -7,8 +7,8 @@
 #include <limits>
 
 using namespace std;
-typedef unsigned long long ULL;
-const unsigned long long INF = ULONG_LONG_MAX;
+typedef long long ULL;
+const long long INF = LONG_LONG_MAX;
 
 
 #endif //BACHELOR_IMPORTS_AND_CONFIGS_H

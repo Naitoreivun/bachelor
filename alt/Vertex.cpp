@@ -1,7 +1,7 @@
 #include "Vertex.h"
 
 Vertex::Vertex(const int id) : id(id) {
-    reset();
+    fullReset();
 }
 
 bool VertexDijkstraDefaultComparator::operator()(const Vertex *v1, const Vertex *v2) const {

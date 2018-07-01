@@ -14,7 +14,7 @@ struct Vertex {
     Vertex *parent;
     unordered_map<Vertex *, ULL> edges;
     unordered_map<Vertex *, ULL> reversedEdges;
-    unordered_map<Vertex *, ULL> landmarkDist[2];
+    vector<ULL> landmarkDist[2];
 
     explicit Vertex(int id);
 

@@ -5,12 +5,11 @@
 
 
 Alt::Alt(vector<Vertex *> &graph, const int landmarksCount) : graph(&graph) {
-    // dummy picking
     selectLandmarks(landmarksCount);
 
-    for (Vertex *landmark: landmarks) {
-        calculateLandmarkDistances(landmark, FROM);
-        calculateLandmarkDistances(landmark, TO);
+    for (int i = 0; i < landmarks.size(); ++i) {
+        calculateLandmarkDistances(i, FROM);
+        calculateLandmarkDistances(i, TO);
     }
 
     for (Vertex *v: graph) {
@@ -20,15 +19,18 @@ Alt::Alt(vector<Vertex *> &graph, const int landmarksCount) : graph(&graph) {
 }
 
 void Alt::selectLandmarks(const int landmarksCount) {
-    unordered_set<Vertex *> dummyLandmarkSingleton;
-    dummyLandmarkSingleton.insert(graph[0][0]);
+    vector<Vertex *> dummyLandmarkSingleton;
+    dummyLandmarkSingleton.push_back(graph[0][0]);
     findNewFarthestLandmark(dummyLandmarkSingleton);
     for (int i = 1; i < landmarksCount; ++i) {
         findNewFarthestLandmark(landmarks);
     }
+    for (int i = 0; i < landmarks.size(); ++i) {
+        landmarkIds[landmarks[i]] = i;
+    }
 }
 
-void Alt::findNewFarthestLandmark(const unordered_set<Vertex *> &currentLandmarks) {
+void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
     set<Vertex *, VertexDijkstraDefaultComparator> Q;
 
     for (Vertex *landmark: currentLandmarks) {
@@ -63,30 +65,30 @@ void Alt::findNewFarthestLandmark(const unordered_set<Vertex *> &currentLandmark
     ULL currentMaxDist = 0ull;
 
     for (Vertex *v: *graph) {
-        if (v->dist > currentMaxDist && landmarks.find(v) == landmarks.end()) {
+        if (v->dist > currentMaxDist && find(landmarks.begin(), landmarks.end(), v) == landmarks.end()) {
             landmarkCandidate = v;
             currentMaxDist = v->dist;
         }
         v->reset();
     }
-    landmarks.insert(landmarkCandidate);
+    landmarks.push_back(landmarkCandidate);
 }
 
-void Alt::calculateLandmarkDistances(Vertex *landmark, const int direction) {
+void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) {
     for (Vertex *vertex: *graph) {
-        vertex->landmarkDist[direction][landmark] = INF;
+        vertex->landmarkDist[direction].push_back(INF);
         vertex->visited = false;
     }
-    landmark->landmarkDist[direction][landmark] = 0;
+    landmarks[landmarkId]->landmarkDist[direction][landmarkId] = 0;
 
-    auto comp = [&landmark, &direction](Vertex *v1, Vertex *v2) -> bool {
-        const ULL dist1 = v1->landmarkDist[direction][landmark];
-        const ULL dist2 = v2->landmarkDist[direction][landmark];
+    auto comp = [&landmarkId, &direction](Vertex *v1, Vertex *v2) -> bool {
+        const ULL dist1 = v1->landmarkDist[direction][landmarkId];
+        const ULL dist2 = v2->landmarkDist[direction][landmarkId];
         return dist1 == dist2 ? v1->id < v2->id : dist1 < dist2;
     };
     auto Q = set<Vertex *, decltype(comp)>(comp);
 
-    Q.insert(landmark);
+    Q.insert(landmarks[landmarkId]);
 
     while (!Q.empty()) {
         Vertex *u = *Q.begin();
@@ -103,10 +105,10 @@ void Alt::calculateLandmarkDistances(Vertex *landmark, const int direction) {
                 continue;
             }
 
-            const ULL newDist = u->landmarkDist[direction][landmark] + edge.second;
-            if (newDist < dest->landmarkDist[direction][landmark]) {
+            const ULL newDist = u->landmarkDist[direction][landmarkId] + edge.second;
+            if (newDist < dest->landmarkDist[direction][landmarkId]) {
                 Q.erase(dest);
-                dest->landmarkDist[direction][landmark] = newDist;
+                dest->landmarkDist[direction][landmarkId] = newDist;
                 Q.insert(dest);
             }
         }
@@ -119,10 +121,10 @@ ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
         return 0ull;
     }
 
-//    vector<Vertex *> activeLandmarks = selectActiveLandmarks(source, target);
+    const vector<int> &&activeLandmarkIds = selectActiveLandmarks(source, target);
 
     source->dist = 0;
-    source->f = heuristic(source, target);
+    source->f = heuristic(source, target, activeLandmarkIds);
     set<Vertex *, VertexDijkstraFComparator> Q;
     vector<Vertex *> affectedVertices;
     Q.insert(source);
@@ -150,7 +152,7 @@ ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
                 Q.erase(dest);
                 dest->parent = u;
                 dest->dist = tentativeDist;
-                dest->f = dest->dist + heuristic(dest, target);
+                dest->f = dest->dist + heuristic(dest, target, activeLandmarkIds);
                 Q.insert(dest);
             }
         }
@@ -166,36 +168,6 @@ ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
         u->fullReset();
     }
 
-    return result;
-}
-
-ULL Alt::heuristic(Vertex *v, Vertex *t) {
-    if (v == t) {
-        return 0ull;
-    }
-
-    if (t->landmarkDist[FROM].find(v) != t->landmarkDist[FROM].end()) { //landmarks contains todo
-        return t->landmarkDist[FROM][v];
-    }
-
-    if (v->landmarkDist[TO].find(t) != v->landmarkDist[TO].end()) { //landmarks contains todo
-        return v->landmarkDist[TO][t];
-    }
-
-    ULL result = 0ull;
-    for (Vertex *landmark: landmarks) {
-        const ULL fromDiff = t->landmarkDist[FROM][landmark] > v->landmarkDist[FROM][landmark]
-                             ? t->landmarkDist[FROM][landmark] - v->landmarkDist[FROM][landmark]
-                             : 0;
-        const ULL toDiff = v->landmarkDist[TO][landmark] > t->landmarkDist[TO][landmark]
-                           ? v->landmarkDist[TO][landmark] - t->landmarkDist[TO][landmark]
-                           : 0;
-
-        result = max(result, max(
-                fromDiff,
-                toDiff
-        ));
-    }
     return result;
 }
 
