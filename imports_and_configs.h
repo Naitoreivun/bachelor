@@ -7,7 +7,7 @@
 #include <limits>
 
 using namespace std;
-typedef long long ULL;
+typedef long long LL;
 const long long INF = LONG_LONG_MAX;
 
 

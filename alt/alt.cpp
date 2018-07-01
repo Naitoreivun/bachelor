@@ -52,7 +52,7 @@ void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
                 continue;
             }
 
-            const ULL newDist = u->dist + edge.second;
+            const LL newDist = u->dist + edge.second;
             if (newDist < dest->dist) {
                 Q.erase(dest);
                 dest->dist = newDist;
@@ -62,7 +62,7 @@ void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
     }
 
     Vertex *landmarkCandidate = nullptr;
-    ULL currentMaxDist = 0ull;
+    LL currentMaxDist = 0ll;
 
     for (Vertex *v: *graph) {
         if (v->dist > currentMaxDist && find(landmarks.begin(), landmarks.end(), v) == landmarks.end()) {
@@ -82,8 +82,8 @@ void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) 
     landmarks[landmarkId]->landmarkDist[direction][landmarkId] = 0;
 
     auto comp = [&landmarkId, &direction](Vertex *v1, Vertex *v2) -> bool {
-        const ULL dist1 = v1->landmarkDist[direction][landmarkId];
-        const ULL dist2 = v2->landmarkDist[direction][landmarkId];
+        const LL dist1 = v1->landmarkDist[direction][landmarkId];
+        const LL dist2 = v2->landmarkDist[direction][landmarkId];
         return dist1 == dist2 ? v1->id < v2->id : dist1 < dist2;
     };
     auto Q = set<Vertex *, decltype(comp)>(comp);
@@ -98,14 +98,14 @@ void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) 
         }
         u->visited = true;
 
-        const unordered_map<Vertex *, ULL> &edges = direction == FROM ? u->edges : u->reversedEdges;
+        const unordered_map<Vertex *, LL> &edges = direction == FROM ? u->edges : u->reversedEdges;
         for (auto edge: edges) {
             Vertex *const dest = edge.first;
             if (dest->visited) {
                 continue;
             }
 
-            const ULL newDist = u->landmarkDist[direction][landmarkId] + edge.second;
+            const LL newDist = u->landmarkDist[direction][landmarkId] + edge.second;
             if (newDist < dest->landmarkDist[direction][landmarkId]) {
                 Q.erase(dest);
                 dest->landmarkDist[direction][landmarkId] = newDist;
@@ -116,9 +116,9 @@ void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) 
 }
 
 
-ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
+LL Alt::altDijkstra(Vertex *source, Vertex *target) {
     if (source == target) {
-        return 0ull;
+        return 0ll;
     }
 
     const vector<int> &&activeLandmarkIds = selectActiveLandmarks(source, target);
@@ -147,7 +147,7 @@ ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
                 continue;
             }
 
-            const ULL tentativeDist = u->dist + edge.second;
+            const LL tentativeDist = u->dist + edge.second;
             if (tentativeDist < dest->dist) {
                 Q.erase(dest);
                 dest->parent = u;
@@ -158,7 +158,7 @@ ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
         }
     }
 
-    const ULL result = target->dist;
+    const LL result = target->dist;
     for (Vertex *v : affectedVertices) {
         v->fullReset();
     }
@@ -171,9 +171,9 @@ ULL Alt::altDijkstra(Vertex *source, Vertex *target) {
     return result;
 }
 
-ULL Alt::regularDijkstra(Vertex *source, Vertex *target) {
+LL Alt::regularDijkstra(Vertex *source, Vertex *target) {
     if (source == target) {
-        return 0ull;
+        return 0ll;
     }
 
     set<Vertex *, VertexDijkstraDefaultComparator> Q;
@@ -200,7 +200,7 @@ ULL Alt::regularDijkstra(Vertex *source, Vertex *target) {
                 continue;
             }
 
-            const ULL newDist = u->dist + edge.second;
+            const LL newDist = u->dist + edge.second;
             if (newDist < dest->dist) {
                 Q.erase(dest);
                 dest->dist = newDist;
@@ -210,7 +210,7 @@ ULL Alt::regularDijkstra(Vertex *source, Vertex *target) {
         }
     }
 
-    const ULL result = target->dist;
+    const LL result = target->dist;
     for (Vertex *v : affectedVertices) {
         v->reset();
     }

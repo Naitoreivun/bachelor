@@ -66,7 +66,7 @@ void init() {
         }
 
         int source, dest;
-        ULL weight;
+        LL weight;
         for (int i = 0; i < m; ++i) {
             file >> source >> dest >> weight;
             if (source != dest) {
@@ -95,8 +95,8 @@ bool calculateDistance(Alt &alt, int v1, int v2) {
     const auto source = graph[v1 - 1];
     const auto target = graph[v2 - 1];
 
-    const ULL altDist = alt.altDijkstra(source, target);
-    const ULL regDist = alt.regularDijkstra(source, target);
+    const LL altDist = alt.altDijkstra(source, target);
+    const LL regDist = alt.regularDijkstra(source, target);
 
 //    if (altDist != regDist) {
 //        cout << v1 << " -> " << v2 << " --- ERROR:\n\tALT -> " << altDist << "\n\tREG -> " << regDist << "\n";
@@ -146,12 +146,12 @@ void printLandmarkDistances() {
         cout << v->id << ":\n";
         cout << "FROM:\n";
         int i = 0;
-        for (ULL dist: v->landmarkDist[FROM]) {
+        for (LL dist: v->landmarkDist[FROM]) {
             cout << "\t" << i++ << " -> " << dist << "\n";
         }
         cout << "TO:\n";
         i = 0;
-        for (ULL dist: v->landmarkDist[TO]) {
+        for (LL dist: v->landmarkDist[TO]) {
             cout << "\t" << i++ << " -> " << dist << "\n";
         }
         cout << endl;

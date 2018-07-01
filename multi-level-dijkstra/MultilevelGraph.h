@@ -36,9 +36,9 @@ struct MultilevelGraph {
 
     void prepareVerticesForQueries();
 
-    ULL calculateDistance(Vertex *source, Vertex *target);
+    LL calculateDistance(Vertex *source, Vertex *target);
 
-    ULL regularDijkstra(Vertex *source, Vertex *target);
+    LL regularDijkstra(Vertex *source, Vertex *target);
 
     void createConnectedComponents();
 

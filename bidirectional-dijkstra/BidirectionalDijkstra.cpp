@@ -1,9 +1,9 @@
 #include "BidirectionalDijkstra.h"
 #include <set>
 
-ULL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
+LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
     if (source == target) {
-        return 0ull;
+        return 0ll;
     }
 
     set<Vertex *, VertexDijkstraForwardComparator> forwardQueue;
@@ -18,7 +18,7 @@ ULL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *targe
 
     int direction;
     Vertex *u;
-    ULL result = INF;
+    LL result = INF;
 
     while (!forwardQueue.empty() && !backwardQueue.empty()) {
         if ((*forwardQueue.begin())->dist[FORWARD] + (*backwardQueue.begin())->dist[BACKWARD] >= result) {
@@ -49,7 +49,7 @@ ULL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *targe
                 continue;
             }
 
-            const ULL newDist = u->dist[direction] + edge.second;
+            const LL newDist = u->dist[direction] + edge.second;
             if (newDist < dest->dist[direction]) {
                 direction == FORWARD ? forwardQueue.erase(dest) : backwardQueue.erase(dest);
                 dest->dist[direction] = newDist;
@@ -79,9 +79,9 @@ ULL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *targe
     return result;
 }
 
-ULL regularDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
+LL regularDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
     if (source == target) {
-        return 0ull;
+        return 0ll;
     }
 
     set<Vertex *, VertexDijkstraForwardComparator> Q;
@@ -108,7 +108,7 @@ ULL regularDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
                 continue;
             }
 
-            const ULL newDist = u->dist[FORWARD] + edge.second;
+            const LL newDist = u->dist[FORWARD] + edge.second;
             if (newDist < dest->dist[FORWARD]) {
                 Q.erase(dest);
                 dest->dist[FORWARD] = newDist;
@@ -118,7 +118,7 @@ ULL regularDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
         }
     }
 
-    const ULL result = target->dist[FORWARD];
+    const LL result = target->dist[FORWARD];
     for (Vertex *v : affectedVertices) {
         v->reset(FORWARD);
     }

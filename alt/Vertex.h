@@ -9,16 +9,16 @@ const int TO = 1;
 struct Vertex {
     const int id;
     bool visited;
-    ULL dist;
-    ULL f;
+    LL dist;
+    LL f;
     Vertex *parent;
-    unordered_map<Vertex *, ULL> edges;
-    unordered_map<Vertex *, ULL> reversedEdges;
-    vector<ULL> landmarkDist[2];
+    unordered_map<Vertex *, LL> edges;
+    unordered_map<Vertex *, LL> reversedEdges;
+    vector<LL> landmarkDist[2];
 
     explicit Vertex(int id);
 
-    inline void link(Vertex *dest, ULL weight) {
+    inline void link(Vertex *dest, LL weight) {
         edges[dest] = weight;
         dest->reversedEdges[this] = weight;
     }

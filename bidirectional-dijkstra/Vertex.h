@@ -9,13 +9,13 @@ const int BACKWARD = 1;
 struct Vertex {
     const int id;
     bool visited[2];
-    ULL dist[2];
+    LL dist[2];
     Vertex *parent[2];
-    unordered_map<Vertex *, ULL> edges[2];
+    unordered_map<Vertex *, LL> edges[2];
 
     explicit Vertex(int id);
 
-    inline void link(Vertex *dest, ULL weight) {
+    inline void link(Vertex *dest, LL weight) {
         edges[FORWARD][dest] = weight;
         dest->edges[BACKWARD][this] = weight;
     }

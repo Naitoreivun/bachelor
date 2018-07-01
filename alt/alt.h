@@ -11,9 +11,9 @@ struct Alt {
 
     Alt(vector<Vertex *> &graph, int landmarksCount);
 
-    ULL altDijkstra(Vertex *source, Vertex *target);
+    LL altDijkstra(Vertex *source, Vertex *target);
 
-    ULL regularDijkstra(Vertex *source, Vertex *target);
+    LL regularDijkstra(Vertex *source, Vertex *target);
 
 private:
     void selectLandmarks(int landmarksCount);
@@ -39,7 +39,7 @@ private:
         return result;
     }
 
-    inline ULL heuristic(Vertex *v, Vertex *t, const vector<int> &activeLandmarkIds) {
+    inline LL heuristic(Vertex *v, Vertex *t, const vector<int> &activeLandmarkIds) {
         if (v == t) {
             return 0ll;
         }
@@ -54,10 +54,10 @@ private:
 //        return v->landmarkDist[TO][tLandmarkIt->second];
 //    }
 
-        ULL result = 0ll;
+        LL result = 0ll;
         for (int landmarkId: activeLandmarkIds) {
-            const ULL fromDiff = t->landmarkDist[FROM][landmarkId] - v->landmarkDist[FROM][landmarkId];
-            const ULL toDiff = v->landmarkDist[TO][landmarkId] - t->landmarkDist[TO][landmarkId];
+            const LL fromDiff = t->landmarkDist[FROM][landmarkId] - v->landmarkDist[FROM][landmarkId];
+            const LL toDiff = v->landmarkDist[TO][landmarkId] - t->landmarkDist[TO][landmarkId];
 
             if (fromDiff > toDiff) {
                 if (fromDiff > result) {

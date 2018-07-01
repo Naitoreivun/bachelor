@@ -76,7 +76,7 @@ void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVerti
                 continue;
             }
 
-            const ULL newDist = u->dist + edge.second;
+            const LL newDist = u->dist + edge.second;
             if (newDist < dest->dist) { // todo: consider edges count from source when ==
                 Q.erase(dest);
                 dest->dist = newDist;

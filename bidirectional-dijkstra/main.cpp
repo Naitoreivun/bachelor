@@ -69,7 +69,7 @@ void init() {
         }
 
         int source, dest;
-        ULL weight;
+        LL weight;
         for (int i = 0; i < m; ++i) {
             file >> source >> dest >> weight;
             if (source != dest) {

@@ -9,32 +9,32 @@ struct ConnectedComponent;
 struct Vertex {
     const int id;
     bool visited;
-    ULL dist;
+    LL dist;
     Vertex *parent;
-    unordered_map<Vertex *, ULL> levelEdges;
+    unordered_map<Vertex *, LL> levelEdges;
     unordered_set<Vertex *> reversedLevelEdges; // useful for finding connected components
-    unordered_map<Vertex *, ULL> upwardEdges;
-    unordered_map<Vertex *, ULL> downwardEdges;
+    unordered_map<Vertex *, LL> upwardEdges;
+    unordered_map<Vertex *, LL> downwardEdges;
     unordered_set<ConnectedComponent *> adjCC;
     Vertex *upper;
     Vertex *lower;
 
     explicit Vertex(int id);
 
-    inline void link(Vertex *dest, ULL weight) {
+    inline void link(Vertex *dest, LL weight) {
         link(dest, weight, levelEdges);
     }
 
-    inline void linkBackAndForth(Vertex *dest, ULL weight) {
+    inline void linkBackAndForth(Vertex *dest, LL weight) {
         link(dest, weight, levelEdges);
         dest->reversedLevelEdges.insert(this);
     }
 
-    inline void linkUp(Vertex *dest, ULL weight) {
+    inline void linkUp(Vertex *dest, LL weight) {
         link(dest, weight, upwardEdges);
     }
 
-    inline void linkDown(Vertex *dest, ULL weight) {
+    inline void linkDown(Vertex *dest, LL weight) {
         link(dest, weight, downwardEdges);
     }
 
@@ -49,7 +49,7 @@ struct Vertex {
     }
 
 private:
-    void link(Vertex *dest, ULL weight, unordered_map<Vertex *, ULL> &edges);
+    void link(Vertex *dest, LL weight, unordered_map<Vertex *, LL> &edges);
 };
 
 // http://thispointer.com/how-to-use-unordered_set-with-user-defined-classes-tutorial-example/

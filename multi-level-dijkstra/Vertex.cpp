@@ -1,8 +1,8 @@
 #include "Vertex.h"
 
-Vertex::Vertex(int id) : id(id), visited(false), dist(0ull), parent(nullptr), upper(nullptr), lower(nullptr) {}
+Vertex::Vertex(int id) : id(id), visited(false), dist(0ll), parent(nullptr), upper(nullptr), lower(nullptr) {}
 
-void Vertex::link(Vertex *dest, ULL weight, unordered_map<Vertex *, ULL> &edges) {
+void Vertex::link(Vertex *dest, LL weight, unordered_map<Vertex *, LL> &edges) {
     edges[dest] = weight;
 }
 

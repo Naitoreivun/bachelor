@@ -159,7 +159,7 @@ void MultilevelGraph::prepareVerticesForQueries() {
     }
 }
 
-ULL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
+LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
     if ((*source->adjCC.begin())->parent == (*target->adjCC.begin())->parent) {
         return regularDijkstra(source, target);
     }
@@ -226,7 +226,7 @@ ULL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
 
 //    printPathFromSourceToTarget(source, target);
 
-    const ULL result = target->dist;
+    const LL result = target->dist;
 
     for (Vertex *v : affectedVertices) {
         v->reset();
@@ -287,12 +287,12 @@ void MultilevelGraph::levelEdgesDijkstra(const VertexAndLevel &vl,
 //    for (Vertex *v: *upwardCCTargetPath.back()->adjVertices) { // upwardCCTargetPath[vl.level + 0]
     for (auto e: u->levelEdges) {
         Vertex *v = e.first;
-        const unordered_map<Vertex *, ULL>::const_iterator &destIt = u->levelEdges.find(v);
+        const unordered_map<Vertex *, LL>::const_iterator &destIt = u->levelEdges.find(v);
         if (v->visited || destIt == u->levelEdges.end()) {
             continue;
         }
 
-        const ULL newDist = u->dist + destIt->second;
+        const LL newDist = u->dist + destIt->second;
         if (newDist < v->dist) {
             const VertexAndLevel destVL{v, vl.level}; //todo extract
             Q.erase(destVL);
@@ -309,12 +309,12 @@ void MultilevelGraph::upwardEdgesDijkstra(const VertexAndLevel &vl,
     const unsigned int nextLevel = vl.level + 1u;
     Vertex *const u = vl.vertex;
     for (Vertex *v: upwardCCSourcePath[nextLevel]->adjVertices) {
-        const unordered_map<Vertex *, ULL>::const_iterator &destIt = u->upwardEdges.find(v);
+        const unordered_map<Vertex *, LL>::const_iterator &destIt = u->upwardEdges.find(v);
         if (v->visited || destIt == u->upwardEdges.end()) {
             continue;
         }
 
-        const ULL newDist = u->dist + destIt->second;
+        const LL newDist = u->dist + destIt->second;
         if (newDist < v->dist) {
             const VertexAndLevel destVL{v, nextLevel}; // todo extract
             Q.erase(destVL);
@@ -331,12 +331,12 @@ void MultilevelGraph::downwardEdgesDijkstra(const VertexAndLevel &vl,
     const unsigned int prevLvl = vl.level - 1u;
     Vertex *const u = vl.vertex;
     for (Vertex *v: upwardCCTargetPath[prevLvl]->adjVertices) {
-        const unordered_map<Vertex *, ULL>::const_iterator &destIt = u->downwardEdges.find(v);
+        const unordered_map<Vertex *, LL>::const_iterator &destIt = u->downwardEdges.find(v);
         if (v->visited || destIt == u->downwardEdges.end()) {
             continue;
         }
 
-        const ULL newDist = u->dist + destIt->second;
+        const LL newDist = u->dist + destIt->second;
         if (newDist < v->dist) {
             const VertexAndLevel destVL{v, prevLvl};
             Q.erase(destVL);
@@ -347,9 +347,9 @@ void MultilevelGraph::downwardEdgesDijkstra(const VertexAndLevel &vl,
     }
 }
 
-ULL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
+LL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
     if (source == target) {
-        return 0ull;
+        return 0ll;
     }
 
     set<Vertex *, VertexDijkstraComparator> Q;
@@ -376,7 +376,7 @@ ULL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
                 continue;
             }
 
-            const ULL newDist = u->dist + edge.second;
+            const LL newDist = u->dist + edge.second;
             if (newDist < dest->dist) {
                 Q.erase(dest);
                 dest->dist = newDist;
@@ -388,7 +388,7 @@ ULL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
 
 //    printPathFromSourceToTarget(source, target);
 
-    const ULL result = target->dist;
+    const LL result = target->dist;
     for (Vertex *v : affectedVertices) {
         v->reset();
     }
