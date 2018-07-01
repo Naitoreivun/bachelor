@@ -162,10 +162,8 @@ LL Alt::altDijkstra(Vertex *source, Vertex *target) {
     for (Vertex *v : affectedVertices) {
         v->fullReset();
     }
-    while (!Q.empty()) { // todo speedup
-        Vertex *u = *Q.begin();
-        Q.erase(Q.begin());
-        u->fullReset();
+    for (Vertex *v : Q) {
+        v->fullReset();
     }
 
     return result;
@@ -214,10 +212,8 @@ LL Alt::regularDijkstra(Vertex *source, Vertex *target) {
     for (Vertex *v : affectedVertices) {
         v->reset();
     }
-    while (!Q.empty()) { // todo speedup
-        Vertex *u = *Q.begin();
-        Q.erase(Q.begin());
-        u->reset();
+    for (Vertex *v : Q) {
+        v->reset();
     }
 
     return result;

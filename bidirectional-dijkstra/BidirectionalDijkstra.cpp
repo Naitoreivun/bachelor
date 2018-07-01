@@ -35,12 +35,9 @@ LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target
             backwardQueue.erase(backwardQueue.begin());
         }
         affectedVertices.push_back(u);
-        if (u->visited[direction]) { // todo try swap
+        if (u->visited[direction]) {
             continue;
         }
-//        if (u->visited[!direction]) {
-//            break;
-//        }
         u->visited[direction] = true;
 
         for (auto edge: u->edges[direction]) {
@@ -57,20 +54,16 @@ LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target
                 direction == FORWARD ? forwardQueue.insert(dest) : backwardQueue.insert(dest);
             }
             if (dest->visited[!direction]) {
-                result = min(result, newDist + dest->dist[!direction]); // todo at the beginning
+                result = min(result, newDist + dest->dist[!direction]);
             }
         }
     }
 
-    while (!forwardQueue.empty()) { // todo speedup
-        Vertex *u = *forwardQueue.begin();
-        forwardQueue.erase(forwardQueue.begin());
-        u->reset(FORWARD);
+    for (Vertex *v: forwardQueue) {
+        v->reset(FORWARD);
     }
-    while (!backwardQueue.empty()) { // todo speedup
-        Vertex *u = *backwardQueue.begin();
-        backwardQueue.erase(backwardQueue.begin());
-        u->reset(BACKWARD);
+    for (Vertex *v: backwardQueue) {
+        v->reset(BACKWARD);
     }
     for (Vertex *v : affectedVertices) {
         v->reset();
@@ -122,10 +115,8 @@ LL regularDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
     for (Vertex *v : affectedVertices) {
         v->reset(FORWARD);
     }
-    while (!Q.empty()) { // todo speedup
-        Vertex *u = *Q.begin();
-        Q.erase(Q.begin());
-        u->reset();
+    for (Vertex *v : Q) {
+        v->reset(FORWARD);
     }
 
     return result;

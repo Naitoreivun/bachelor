@@ -115,7 +115,7 @@ void benchmark(Alt &alt) {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
     const int iEnd = n / 5;
-//    const int iEnd = n / 400;
+//    const int iEnd = n / 200;
 
     cout << "alt start\n";
     milliseconds startAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());

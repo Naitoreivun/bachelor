@@ -194,33 +194,17 @@ LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
             if (upwardCCSourcePath[uLevel]->adjVertices.find(u) != upwardCCSourcePath[uLevel]->adjVertices.end()) {
                 upwardEdgesDijkstra(vl, upwardCCSourcePath, Q);
             }
-            Vertex *upper = u->upper;
-            if (upper != nullptr && !upper->visited && u->dist < upper->dist) { // todo extract
-                const VertexAndLevel upperVL{upper, uLevel + 1u};
-                Q.erase(upperVL);
-                upper->dist = u->dist;
-                upper->parent = u;
-                Q.insert(upperVL);
-            }
+            relaxUpperOrLowerVertex(u, u->upper, uLevel + 1u, Q);
         }
         if (uLevel > 0) { // i can go down
             if (upwardCCTargetPath[uLevel]->adjVertices.find(u) != upwardCCTargetPath[uLevel]->adjVertices.end()) {
                 downwardEdgesDijkstra(vl, upwardCCTargetPath, Q);
             }
-            Vertex *lower = u->lower;
-            if (lower != nullptr && !lower->visited && u->dist < lower->dist) { // todo extract
-                const VertexAndLevel lowerVL{lower, uLevel - 1u};
-                Q.erase(lowerVL);
-                lower->dist = u->dist;
-                lower->parent = u;
-                Q.insert(lowerVL);
-            }
+            relaxUpperOrLowerVertex(u, u->lower, uLevel - 1u, Q);
         }
 
         if (uLevel == lastCommonLevel) { // i can spread
-//            if (sourceTopCCAdjVertices->find(vl.vertex) != sourceTopCCAdjVertices->end()) {
             levelEdgesDijkstra(vl, upwardCCTargetPath, Q);
-//            }
         }
     }
 
@@ -235,18 +219,31 @@ LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
         pair.vertex->reset();
     }
 
-//    for (ConnectedComponent *cc: upwardCCSourcePath) {
-//        for (Vertex *v: *cc->adjVertices) {
-//            v->reset();
-//        }
-//    }
-//    for (ConnectedComponent *cc: upwardCCTargetPath) {
-//        for (Vertex *v: *cc->adjVertices) {
-//            v->reset();
-//        }
-//    }
+    for (ConnectedComponent *cc: upwardCCSourcePath) {
+        for (Vertex *v: cc->adjVertices) {
+            v->reset();
+        }
+    }
+    for (ConnectedComponent *cc: upwardCCTargetPath) {
+        for (Vertex *v: cc->adjVertices) {
+            v->reset();
+        }
+    }
 
     return result;
+}
+
+inline void MultilevelGraph::relaxUpperOrLowerVertex(Vertex *const u,
+                                                     Vertex *anotherVertex,
+                                                     const unsigned int anotherLevel,
+                                                     set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
+    if (anotherVertex != nullptr && !anotherVertex->visited && u->dist < anotherVertex->dist) {
+        const VertexAndLevel lowerVL{anotherVertex, anotherLevel};
+        Q.erase(lowerVL);
+        anotherVertex->dist = u->dist;
+        anotherVertex->parent = u;
+        Q.insert(lowerVL);
+    }
 }
 
 void MultilevelGraph::printCCPaths(const vector<ConnectedComponent *> &upwardCCSourcePath,
@@ -262,7 +259,7 @@ void MultilevelGraph::printCCPaths(const vector<ConnectedComponent *> &upwardCCS
     cout << endl;
 }
 
-vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *vertex0lvl) {
+inline vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *vertex0lvl) {
     vector<ConnectedComponent *> V;
     ConnectedComponent *cc = (*vertex0lvl->adjCC.begin());
     while (cc != ConnectedComponent::NULL_OBJECT) {
@@ -273,77 +270,60 @@ vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *vertex0lvl
     return std::move(V);
 }
 
-void MultilevelGraph::popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2) {
+inline void
+MultilevelGraph::popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2) {
     while (v1.back() == v2.back()) {
         v1.pop_back();
         v2.pop_back();
     }
 }
 
-void MultilevelGraph::levelEdgesDijkstra(const VertexAndLevel &vl,
-                                         vector<ConnectedComponent *> &upwardCCTargetPath,
-                                         set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
-    Vertex *const u = vl.vertex;
-//    for (Vertex *v: *upwardCCTargetPath.back()->adjVertices) { // upwardCCTargetPath[vl.level + 0]
-    for (auto e: u->levelEdges) {
-        Vertex *v = e.first;
-        const unordered_map<Vertex *, LL>::const_iterator &destIt = u->levelEdges.find(v);
-        if (v->visited || destIt == u->levelEdges.end()) {
+inline void MultilevelGraph::upwardEdgesDijkstra(const VertexAndLevel &vl,
+                                                 const vector<ConnectedComponent *> &upwardCCSourcePath,
+                                                 set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
+    upwardOrDownwardEdgesDijkstra(vl.vertex, vl.vertex->upwardEdges, vl.level + 1u, upwardCCSourcePath, Q);
+}
+
+inline void MultilevelGraph::downwardEdgesDijkstra(const VertexAndLevel &vl,
+                                                   const vector<ConnectedComponent *> &upwardCCTargetPath,
+                                                   set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
+    upwardOrDownwardEdgesDijkstra(vl.vertex, vl.vertex->downwardEdges, vl.level - 1u, upwardCCTargetPath, Q);
+}
+
+inline void MultilevelGraph::levelEdgesDijkstra(const VertexAndLevel &vl,
+                                                vector<ConnectedComponent *> &upwardCCTargetPath,
+                                                set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
+    for (auto edge: vl.vertex->levelEdges) {
+        if (edge.first->visited) {
             continue;
         }
-
-        const LL newDist = u->dist + destIt->second;
-        if (newDist < v->dist) {
-            const VertexAndLevel destVL{v, vl.level}; //todo extract
-            Q.erase(destVL);
-            v->dist = newDist;
-            v->parent = u;
-            Q.insert(destVL);
-        }
+        relax(vl.vertex, edge.first, edge.second, vl.level, Q);
     }
 }
 
-void MultilevelGraph::upwardEdgesDijkstra(const VertexAndLevel &vl,
-                                          const vector<ConnectedComponent *> &upwardCCSourcePath,
-                                          set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
-    const unsigned int nextLevel = vl.level + 1u;
-    Vertex *const u = vl.vertex;
-    for (Vertex *v: upwardCCSourcePath[nextLevel]->adjVertices) {
-        const unordered_map<Vertex *, LL>::const_iterator &destIt = u->upwardEdges.find(v);
-        if (v->visited || destIt == u->upwardEdges.end()) {
+inline void MultilevelGraph::upwardOrDownwardEdgesDijkstra(Vertex *u,
+                                                           const unordered_map<Vertex *, LL> &uEdges,
+                                                           const unsigned int anotherLevel,
+                                                           const vector<ConnectedComponent *> &upwardCCPath,
+                                                           set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
+    for (Vertex *v: upwardCCPath[anotherLevel]->adjVertices) {
+        const unordered_map<Vertex *, LL>::const_iterator &destIt = uEdges.find(v);
+        if (v->visited || destIt == uEdges.end()) {
             continue;
         }
-
-        const LL newDist = u->dist + destIt->second;
-        if (newDist < v->dist) {
-            const VertexAndLevel destVL{v, nextLevel}; // todo extract
-            Q.erase(destVL);
-            v->dist = newDist;
-            v->parent = u;
-            Q.insert(destVL);
-        }
+        relax(u, v, destIt->second, anotherLevel, Q);
     }
 }
 
-void MultilevelGraph::downwardEdgesDijkstra(const VertexAndLevel &vl,
-                                            const vector<ConnectedComponent *> &upwardCCTargetPath,
-                                            set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
-    const unsigned int prevLvl = vl.level - 1u;
-    Vertex *const u = vl.vertex;
-    for (Vertex *v: upwardCCTargetPath[prevLvl]->adjVertices) {
-        const unordered_map<Vertex *, LL>::const_iterator &destIt = u->downwardEdges.find(v);
-        if (v->visited || destIt == u->downwardEdges.end()) {
-            continue;
-        }
-
-        const LL newDist = u->dist + destIt->second;
-        if (newDist < v->dist) {
-            const VertexAndLevel destVL{v, prevLvl};
-            Q.erase(destVL);
-            v->dist = newDist;
-            v->parent = u;
-            Q.insert(destVL);
-        }
+inline void MultilevelGraph::relax(Vertex *u, Vertex *v, const LL uvDist, unsigned int anotherLevel,
+                                   set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const {
+    const LL newDist = u->dist + uvDist;
+    if (newDist < v->dist) {
+        const VertexAndLevel destVL{v, anotherLevel};
+        Q.erase(destVL);
+        v->dist = newDist;
+        v->parent = u;
+        Q.insert(destVL);
     }
 }
 
@@ -392,10 +372,8 @@ LL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
     for (Vertex *v : affectedVertices) {
         v->reset();
     }
-    while (!Q.empty()) { // todo speedup
-        Vertex *u = *Q.begin();
-        Q.erase(u);
-        u->reset();
+    for (Vertex *v : Q) {
+        v->reset();
     }
 
     return result;

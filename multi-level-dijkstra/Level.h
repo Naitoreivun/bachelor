@@ -12,7 +12,6 @@ typedef unordered_set<Vertex *, VertexHasher, VertexComparator> VertexSet;
 
 struct Level {
     const int value;
-//    unordered_set<Vertex *> selectedVertices;
     VertexSet selectedVertices;
     unordered_set<ConnectedComponent *> connectedComponents;
 

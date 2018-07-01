@@ -25,32 +25,8 @@ void printPathFromSourceToTarget(Vertex *source, Vertex *target) {
 }
 
 void Level::calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) {
-
     dijkstra(prevLevelVertex, prevSelectedVertices);
-
-//    if (value == 2 && prevLevelVertex->id == 18) {
-//        Vertex *const &v4 = *prevSelectedVertices.find(new Vertex(4));
-//        Vertex *const &v254 = *prevSelectedVertices.find(new Vertex(254));
-//        cout << endl << endl;
-//        printPathFromSourceToTarget(prevLevelVertex, v4);
-//        cout << endl << endl;
-//        printPathFromSourceToTarget(prevLevelVertex, v254);
-//        cout << endl << endl;
-//    }
-//
     pickEdgesForNewLevel(prevLevelVertex);
-
-//    cout << endl << prevLevelVertex->id << ":" << endl;
-//    for (Vertex *v: prevSelectedVertices) {
-//        cout << "\t" << v->id << " (" << v->dist << "):";
-//        Vertex *current = v;
-//        while (current != prevLevelVertex) {
-//            cout << " -> " << current->id;
-//            current = current->parent;
-//        }
-//        cout << endl;
-//    }
-//    cout << endl;
 }
 
 void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) const {
@@ -77,7 +53,7 @@ void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVerti
             }
 
             const LL newDist = u->dist + edge.second;
-            if (newDist < dest->dist) { // todo: consider edges count from source when ==
+            if (newDist < dest->dist) {
                 Q.erase(dest);
                 dest->dist = newDist;
                 dest->parent = u;
@@ -106,12 +82,10 @@ void Level::pickEdgesForNewLevel(Vertex *prevLevelVertex) {
             }
             else {
                 (*selectedVertexIt)->linkDown(v, v->dist); // downward edge
-//                v->addParentAdjVertexForEveryAdjCC(*selectedVertexIt);
             }
         }
         else if (isDestSelectedVertex) {
             prevLevelVertex->linkUp(*destSelectedVertexIt, v->dist); // upward edge
-//            prevLevelVertex->addParentAdjVertexForEveryAdjCC(*destSelectedVertexIt);
         }
 
         if (!isDestSelectedVertex) {

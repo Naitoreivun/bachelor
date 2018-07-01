@@ -38,8 +38,6 @@ struct Vertex {
         link(dest, weight, downwardEdges);
     }
 
-//    void addParentAdjVertexForEveryAdjCC(Vertex *vertex);
-
     bool operator<(const Vertex &rhs) const;
 
     inline void reset() {
@@ -60,16 +58,6 @@ struct VertexHasher {
 struct VertexComparator {
     bool operator()(const Vertex *v1, const Vertex *v2) const;
 };
-
-// https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector/27216842#27216842
-// https://stackoverflow.com/a/27216842
-//struct SetHasher {
-//    size_t operator()(const unordered_set<Vertex *> *us) const;
-//};
-//
-//struct SetComparator {
-//    bool operator()(const unordered_set<Vertex *> *s1, const unordered_set<Vertex *> *s2) const;
-//};
 
 struct VertexDijkstraComparator {
     bool operator()(const Vertex *v1, const Vertex *v2) const;

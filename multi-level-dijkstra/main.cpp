@@ -38,7 +38,7 @@ int main() {
 //    M.printAll();
 //    M.printConnectedComponents();
 
-    calculate(M);
+//    calculate(M);
 
     benchmark(M);
 
@@ -66,8 +66,8 @@ void init() {
 //    const char *const filename = "../../tests/airportDebug.in";
 //    const char *const filename = "../../tests/airportDebug2.in";
 //    const char *const filename = "../../tests/airportDebug3.in";
-//    const char *const filename = "../../tests/USairport500.in";
-    const char *const filename = "../../tests/california.in";
+    const char *const filename = "../../tests/USairport500.in";
+//    const char *const filename = "../../tests/california.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -135,8 +135,8 @@ void benchmark(MultilevelGraph &M) {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
 
-//    const int iEnd = n / 5;
-    const int iEnd = n / 100;
+    const int iEnd = n / 5;
+//    const int iEnd = n / 100;
 
     cout << "mul start\n";
     milliseconds startMul = duration_cast<milliseconds>(system_clock::now().time_since_epoch());

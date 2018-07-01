@@ -17,7 +17,7 @@ struct VertexAndLevelDijkstraComparator {
         Vertex *const v2 = t2.vertex;
         return v1->dist == v2->dist
                ? (v1->id == v2->id
-                  ? t1.level < t2.level //todo speedup
+                  ? t1.level < t2.level
                   : v1->id < v2->id)
                : v1->dist < v2->dist;
     }
@@ -43,21 +43,33 @@ struct MultilevelGraph {
     void createConnectedComponents();
 
 private:
-    vector<ConnectedComponent *> getUpwardCCPath(Vertex *vertex0lvl);
+    inline vector<ConnectedComponent *> getUpwardCCPath(Vertex *vertex0lvl);
 
-    void popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2);
+    inline void popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2);
 
-    void levelEdgesDijkstra(const VertexAndLevel &triple,
-                            vector<ConnectedComponent *> &upwardCCTargetPath,
-                            set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+    inline void relaxUpperOrLowerVertex(Vertex *u, Vertex *anotherVertex, unsigned int anotherLevel,
+                                        set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
 
-    void upwardEdgesDijkstra(const VertexAndLevel &triple,
-                             const vector<ConnectedComponent *> &upwardCCSourcePath,
-                             set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+    inline void levelEdgesDijkstra(const VertexAndLevel &triple,
+                                   vector<ConnectedComponent *> &upwardCCTargetPath,
+                                   set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
 
-    void downwardEdgesDijkstra(const VertexAndLevel &newTriple,
-                               const vector<ConnectedComponent *> &upwardCCTargetPath,
-                               set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+    inline void upwardEdgesDijkstra(const VertexAndLevel &triple,
+                                    const vector<ConnectedComponent *> &upwardCCSourcePath,
+                                    set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+
+    inline void downwardEdgesDijkstra(const VertexAndLevel &newTriple,
+                                      const vector<ConnectedComponent *> &upwardCCTargetPath,
+                                      set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+
+    inline void upwardOrDownwardEdgesDijkstra(Vertex *u,
+                                              const unordered_map<Vertex *, LL> &uEdges,
+                                              unsigned int anotherLevel,
+                                              const vector<ConnectedComponent *> &upwardCCPath,
+                                              set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
+
+    inline void relax(Vertex *u, Vertex *v, LL uvDist, unsigned int anotherLevel,
+                      set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
 
     void printCCPaths(const vector<ConnectedComponent *> &upwardCCSourcePath,
                       const vector<ConnectedComponent *> &upwardCCTargetPath) const;

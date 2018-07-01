@@ -51,8 +51,8 @@ void init() {
 //    const char *const filename = "../../tests/airportDebug.in";
 //    const char *const filename = "../../tests/airportDebug2.in";
 //    const char *const filename = "../../tests/airportDebug3.in";
-//    const char *const filename = "../../tests/USairport500.in";
-    const char *const filename = "../../tests/california.in";
+    const char *const filename = "../../tests/USairport500.in";
+//    const char *const filename = "../../tests/california.in";
     fstream file(filename);
 
     if (file.good()) {
@@ -106,19 +106,8 @@ bool calculateDistance(int v1, int v2) {
 void benchmark() {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
-//    const int iEnd = n / 5;
-    const int iEnd = n / 400;
-
-    cout << "reg start\n";
-    milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= iEnd; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            regularDijkstra(graph, graph[i - 1], graph[j - 1]);
-        }
-        cout << i << " ";
-    }
-    milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
+    const int iEnd = n / 5;
+//    const int iEnd = n / 400;
 
     cout << "bidi start\n";
     milliseconds startBidi = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -130,5 +119,16 @@ void benchmark() {
     }
     milliseconds stopBidi = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nbidi stop:\n\t" << (stopBidi.count() - startBidi.count()) << "\n\n";
+
+    cout << "reg start\n";
+    milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    for (int i = 1; i <= iEnd; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            regularDijkstra(graph, graph[i - 1], graph[j - 1]);
+        }
+        cout << i << " ";
+    }
+    milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
 
 }
