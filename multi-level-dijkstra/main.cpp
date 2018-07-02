@@ -19,15 +19,20 @@ void calculate(MultilevelGraph &M);
 
 void benchmark(MultilevelGraph &M);
 
+void loadQueries();
+
 using namespace std::chrono;
+
+vector<pair<int, int>> queries;
 
 int main() {
     cout << "start" << endl;
     init();
     cout << "original graph loaded" << endl;
 
-    auto verticesSortedByDegree = getVerticesSortedByDegree();
+    milliseconds startPre = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 
+    auto verticesSortedByDegree = getVerticesSortedByDegree();
     MultilevelGraph M(originalVertices);
     for (int i = 1; i < levelSizes.size(); ++i) {
         M.addLevel(vector<Vertex *>(verticesSortedByDegree.begin(), verticesSortedByDegree.begin() + levelSizes[i]));
@@ -35,73 +40,85 @@ int main() {
     M.createConnectedComponents();
     M.prepareVerticesForQueries();
 
+    milliseconds stopPre = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\npreprocessing time:\n\t" << (stopPre.count() - startPre.count()) << "\n\n";
+
 //    M.printAll();
 //    M.printConnectedComponents();
 
-//    calculate(M);
+    loadQueries();
 
+//    calculate(M);
     benchmark(M);
 
     cout << "finish" << endl;
     return 0;
 }
 
-void calculate(MultilevelGraph &M) {
-    bool ok = true;
-    for (int i = 1; i <= n; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            ok &= calculateDistance(i, j, M);
-        }
-        cout << i << " -> " << (ok ? "\t\t JAK NA RAZIE SPOKO" : "\t\t COS SIE ZEPSULO :(") << "\n";
+void init() {
+    fstream file(pathToGraph);
+
+    if (!file.good()) {
+        cout << "Cannot open file: '" << pathToGraph << "'." << endl;
+        return;
     }
-    cout << "\n" << (ok ? "Tests passed" : "Some tests failed") << endl;
+
+    file >> n >> m;
+
+    int levelsCount;
+    file >> levelsCount;
+    levelSizes.push_back(n);
+    for (int i = 1, levelSize; i <= levelsCount; ++i) {
+        file >> levelSize;
+        levelSizes.push_back(levelSize);
+    }
+
+    degrees.push_back(0);
+    for (int i = 1; i <= n; ++i) {
+        originalVertices.push_back(new Vertex(i));
+        degrees.push_back(0);
+    }
+
+    int source, dest;
+    LL weight;
+    for (int i = 0; i < m; ++i) {
+        file >> source >> dest >> weight;
+        if (source != dest) {
+            originalVertices[source - 1]->linkBackAndForth(originalVertices[dest - 1], weight);
+            ++degrees[source];
+            ++degrees[dest];
+        }
+    }
+    file.close();
 }
 
-void init() {
-//    const char *const filename = "../../tests/test.in";
-//    const char *const filename = "../../tests/test2.in";
-//    const char *const filename = "../../tests/test3.in";
-//    const char *const filename = "../../tests/test4.in";
-//    const char *const filename = "../../tests/pile.in";
-//    const char *const filename = "../../tests/airportDebug.in";
-//    const char *const filename = "../../tests/airportDebug2.in";
-//    const char *const filename = "../../tests/airportDebug3.in";
-    const char *const filename = "../../tests/USairport500.in";
-//    const char *const filename = "../../tests/california.in";
-    fstream file(filename);
+void loadQueries() {
+    fstream file(pathToQueries);
 
-    if (file.good()) {
-        file >> n >> m;
-
-        int levelsCount;
-        file >> levelsCount;
-        levelSizes.push_back(n);
-        for (int i = 1, levelSize; i <= levelsCount; ++i) {
-            file >> levelSize;
-            levelSizes.push_back(levelSize);
-        }
-
-        degrees.push_back(0);
-        for (int i = 1; i <= n; ++i) {
-            originalVertices.push_back(new Vertex(i));
-            degrees.push_back(0);
-        }
-
-        int source, dest;
-        LL weight;
-        for (int i = 0; i < m; ++i) {
-            file >> source >> dest >> weight;
-            if (source != dest) {
-                originalVertices[source - 1]->linkBackAndForth(originalVertices[dest - 1], weight);
-                ++degrees[source];
-                ++degrees[dest];
-            }
-        }
-        file.close();
+    if (!file.good()) {
+        cout << "Cannot open file: '" << pathToQueries << "'." << endl;
+        return;
     }
-    else {
-        cout << "Cannot open file: '" << filename << "'." << endl;
+
+    int count, from, to;
+    file >> count;
+    for (int i = 0; i < count; ++i) {
+        file >> from >> to;
+        queries.emplace_back(from, to);
     }
+
+    cout << "queries loaded" << endl;
+
+    file.close();
+}
+
+void calculate(MultilevelGraph &M) {
+    bool ok = true;
+    for (pair<int, int> &query: queries) {
+        ok &= calculateDistance(query.first, query.second, M);
+//        cout << i << " -> " << (ok ? "\t\t JAK NA RAZIE SPOKO" : "\t\t COS SIE ZEPSULO :(") << "\n";
+    }
+    cout << "\n" << (ok ? "Tests passed" : "Some tests failed") << endl;
 }
 
 vector<Vertex *> getVerticesSortedByDegree() {
@@ -135,27 +152,18 @@ void benchmark(MultilevelGraph &M) {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
 
-    const int iEnd = n / 5;
-//    const int iEnd = n / 100;
-
     cout << "mul start\n";
     milliseconds startMul = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= iEnd; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            M.calculateDistance(originalVertices[i - 1], originalVertices[j - 1]);
-        }
-        cout << i  << " ";
+    for (pair<int, int> &query: queries) {
+        M.calculateDistance(originalVertices[query.first - 1], originalVertices[query.second - 1]);
     }
     milliseconds stopMul = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nmul stop:\n\t" << (stopMul.count() - startMul.count()) << "\n\n";
 
     cout << "reg start\n";
     milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= iEnd; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            M.regularDijkstra(originalVertices[i - 1], originalVertices[j - 1]);
-        }
-        cout << i  << " ";
+    for (pair<int, int> &query: queries) {
+        M.regularDijkstra(originalVertices[query.first - 1], originalVertices[query.second - 1]);
     }
     milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";

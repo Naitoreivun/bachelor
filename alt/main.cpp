@@ -19,7 +19,11 @@ void benchmark(Alt &alt);
 
 void printLandmarkDistances();
 
+void loadQueries();
+
 using namespace std::chrono;
+
+vector<pair<int, int>> queries;
 
 int main() {
     cout << "start" << endl;
@@ -27,12 +31,19 @@ int main() {
     cout << "original graph loaded" << endl;
 
     const int landmarksCount = min(DEFAULT_LANDMARKS_COUNT, n / 4);
+
+    milliseconds startPre = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+
     Alt alt(graph, landmarksCount);
+
+    milliseconds stopPre = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\npreprocessing time:\n\t" << (stopPre.count() - startPre.count()) << "\n\n";
 
 //    printLandmarkDistances();
 
-//    calculate(alt);
+    loadQueries();
 
+//    calculate(alt);
     benchmark(alt);
 
     cout << "finish" << endl;
@@ -40,53 +51,61 @@ int main() {
 }
 
 void init() {
-//    const char *const filename = "../../tests/test.in";
-//    const char *const filename = "../../tests/test2.in";
-//    const char *const filename = "../../tests/test3.in";
-//    const char *const filename = "../../tests/test4.in";
-//    const char *const filename = "../../tests/pile.in";
-//    const char *const filename = "../../tests/airportDebug.in";
-//    const char *const filename = "../../tests/airportDebug2.in";
-//    const char *const filename = "../../tests/airportDebug3.in";
-    const char *const filename = "../../tests/USairport500.in";
-//    const char *const filename = "../../tests/california.in";
-    fstream file(filename);
+    fstream file(pathToGraph);
 
-    if (file.good()) {
-        file >> n >> m;
-
-        int unusedLevelsCount;
-        file >> unusedLevelsCount;
-        for (int i = 1, unusedLevelSize; i <= unusedLevelsCount; ++i) {
-            file >> unusedLevelSize;
-        }
-
-        for (int i = 1; i <= n; ++i) {
-            graph.push_back(new Vertex(i));
-        }
-
-        int source, dest;
-        LL weight;
-        for (int i = 0; i < m; ++i) {
-            file >> source >> dest >> weight;
-            if (source != dest) {
-                graph[source - 1]->link(graph[dest - 1], weight);
-            }
-        }
-        file.close();
+    if (!file.good()) {
+        cout << "Cannot open file: '" << pathToGraph << "'." << endl;
+        return;
     }
-    else {
-        cout << "Cannot open file: '" << filename << "'." << endl;
+
+    file >> n >> m;
+
+    int unusedLevelsCount;
+    file >> unusedLevelsCount;
+    for (int i = 1, unusedLevelSize; i <= unusedLevelsCount; ++i) {
+        file >> unusedLevelSize;
     }
+
+    for (int i = 1; i <= n; ++i) {
+        graph.push_back(new Vertex(i));
+    }
+
+    int source, dest;
+    LL weight;
+    for (int i = 0; i < m; ++i) {
+        file >> source >> dest >> weight;
+        if (source != dest) {
+            graph[source - 1]->link(graph[dest - 1], weight);
+        }
+    }
+    file.close();
+}
+
+void loadQueries() {
+    fstream file(pathToQueries);
+
+    if (!file.good()) {
+        cout << "Cannot open file: '" << pathToQueries << "'." << endl;
+        return;
+    }
+
+    int count, from, to;
+    file >> count;
+    for (int i = 0; i < count; ++i) {
+        file >> from >> to;
+        queries.emplace_back(from, to);
+    }
+
+    cout << "queries loaded" << endl;
+
+    file.close();
 }
 
 void calculate(Alt &alt) {
     bool ok = true;
-    for (int i = 1; i <= n; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            ok &= calculateDistance(alt, i, j);
-        }
-        cout << i << " -> " << (ok ? "\t\t JAK NA RAZIE SPOKO" : "\t\t COS SIE ZEPSULO :(") << "\n";
+    for (pair<int, int> &query: queries) {
+        ok &= calculateDistance(alt, query.first, query.second);
+//        cout << i << " -> " << (ok ? "\t\t JAK NA RAZIE SPOKO" : "\t\t COS SIE ZEPSULO :(") << "\n";
     }
     cout << "\n" << (ok ? "Tests passed" : "Some tests failed") << endl;
 }
@@ -114,27 +133,19 @@ bool calculateDistance(Alt &alt, int v1, int v2) {
 void benchmark(Alt &alt) {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
-    const int iEnd = n / 5;
-//    const int iEnd = n / 200;
 
     cout << "alt start\n";
     milliseconds startAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= iEnd; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            alt.altDijkstra(graph[i - 1], graph[j - 1]);
-        }
-        cout << i << " ";
+    for (pair<int, int> &query: queries) {
+        alt.altDijkstra(graph[query.first - 1], graph[query.second - 1]);
     }
     milliseconds stopAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nalt stop:\n\t" << (stopAlt.count() - startAlt.count()) << "\n\n";
 
     cout << "reg start\n";
     milliseconds startReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    for (int i = 1; i <= iEnd; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            alt.regularDijkstra(graph[i - 1], graph[j - 1]);
-        }
-        cout << i << " ";
+    for (pair<int, int> &query: queries) {
+        alt.regularDijkstra(graph[query.first - 1], graph[query.second - 1]);
     }
     milliseconds stopReg = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\nreg stop:\n\t" << (stopReg.count() - startReg.count()) << "\n\n";
