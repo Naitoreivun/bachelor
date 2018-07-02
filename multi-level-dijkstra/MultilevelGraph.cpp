@@ -219,16 +219,16 @@ LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
         pair.vertex->reset();
     }
 
-    for (ConnectedComponent *cc: upwardCCSourcePath) {
-        for (Vertex *v: cc->adjVertices) {
-            v->reset();
-        }
-    }
-    for (ConnectedComponent *cc: upwardCCTargetPath) {
-        for (Vertex *v: cc->adjVertices) {
-            v->reset();
-        }
-    }
+//    for (ConnectedComponent *cc: upwardCCSourcePath) {
+//        for (Vertex *v: cc->adjVertices) {
+//            v->reset();
+//        }
+//    }
+//    for (ConnectedComponent *cc: upwardCCTargetPath) {
+//        for (Vertex *v: cc->adjVertices) {
+//            v->reset();
+//        }
+//    }
 
     return result;
 }

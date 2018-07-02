@@ -12,8 +12,9 @@ const long long INF = LONG_LONG_MAX;
 
 
 //const string filename = "oldenburg";
-const string filename = "san-francisco";
+//const string filename = "san-francisco";
 //const string filename = "us-airport";
+const string filename = "cop-ph";
 const string pathToGraph = "../../tests/" + filename + ".in";
 const string pathToQueries = "../../tests/" + filename + "_queries.in";
 

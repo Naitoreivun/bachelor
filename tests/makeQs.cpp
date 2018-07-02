@@ -11,14 +11,14 @@ set<pair<int, int>> queries;
 
 int main() {
     fstream output;
-    output.open("../tests/us-airport_queries.in", ios_base::out | ios_base::trunc);
+    output.open("../tests/cop-ph_queries.in", ios_base::out | ios_base::trunc);
     if (!output.good()) {
         cout << "output is bad" << endl;
         return 1;
     }
 
-    int n = 500;
-    int count = 100000;
+    int n = 12008;
+    int count = 5000;
 
     random_device rd;
     mt19937 mt(rd());

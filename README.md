@@ -15,6 +15,8 @@ https://www.cs.utah.edu/~lifeifei/SpatialDataset.htm
 
 https://toreopsahl.com/datasets/#usairports
 
+https://snap.stanford.edu/data/ca-HepPh.html
+
 ## results:
 
 *ALGORITHM (preprocessing time (ms), execution time (ms)) - additional settings*
@@ -33,7 +35,16 @@ https://toreopsahl.com/datasets/#usairports
 + **REG** (0, 90891)
 
 ###### oldenburg: (500k queries)
-+ **MLD** (1127, 6322) - 3 60 20 10
++ **MLD** (1127, 6322) - 4 500 70 30 10
 + **ALT** (121, 11665)
 + **BIDI** (0, 8266)
 + **REG** (0, 10059)
+
+###### cop-ph: (5k queries)
++ **MLD** (364584, 161926) - 6 2000 1000 500 100 60 15
++ **MLD** (384550, 86667) - 3 2000 250 30
++ **MLD** (375178, 79868) - 6 2000 200 100 60 30 10
++ **MLD** (450488, 79293) - 7 5000 2000 200 100 60 30 10
++ **ALT** (677, 97507)
++ **BIDI** (0, 13258)
++ **REG** (0, 102329)
