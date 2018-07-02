@@ -102,9 +102,9 @@ void MultilevelGraph::createConnectedComponent(Vertex *vertex, Level &prevLevel,
         Vertex *u = Q.front();
         Q.pop();
 
-        if (prevLevel.isSelectedVertex(u)) { // todo speedup
-            Vertex *prevU = *prevLevel.selectedVertices.find(u);
-            for (ConnectedComponent *prevCC: prevU->adjCC) {
+        auto prevUIt = prevLevel.selectedVertices.find(u);
+        if (prevUIt != prevLevel.selectedVertices.end()) {
+            for (ConnectedComponent *prevCC: (*prevUIt)->adjCC) {
                 prevCC->parent = cc;
             }
         }
@@ -124,7 +124,7 @@ inline void MultilevelGraph::processAdjVertexInBfs(Level &currentLevel,
                                                    queue<Vertex *> &Q,
                                                    ConnectedComponent *cc,
                                                    Vertex *v) {
-    if (currentLevel.isSelectedVertex(v)) { //todo speedup
+    if (currentLevel.isSelectedVertex(v)) {
         currentLevel.bindCCWithSelectedVertex(cc, v);
     }
     else if (!v->visited) {
@@ -270,8 +270,8 @@ inline vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *ver
     return std::move(V);
 }
 
-inline void
-MultilevelGraph::popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1, vector<ConnectedComponent *> &v2) {
+inline void MultilevelGraph::popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1,
+                                                       vector<ConnectedComponent *> &v2) {
     while (v1.back() == v2.back()) {
         v1.pop_back();
         v2.pop_back();
