@@ -116,7 +116,6 @@ void calculate(MultilevelGraph &M) {
     bool ok = true;
     for (pair<int, int> &query: queries) {
         ok &= calculateDistance(query.first, query.second, M);
-//        cout << i << " -> " << (ok ? "\t\t JAK NA RAZIE SPOKO" : "\t\t COS SIE ZEPSULO :(") << "\n";
     }
     cout << "\n" << (ok ? "Tests passed" : "Some tests failed") << endl;
 }

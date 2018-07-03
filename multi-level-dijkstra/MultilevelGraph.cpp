@@ -112,8 +112,8 @@ void MultilevelGraph::createConnectedComponent(Vertex *vertex, Level &prevLevel,
         for (auto edge: u->levelEdges) {
             processAdjVertexInBfs(currentLevel, Q, cc, edge.first);
         }
-        for (Vertex *v: u->reversedLevelEdges) {
-            processAdjVertexInBfs(currentLevel, Q, cc, v);
+        for (auto edge: u->reversedLevelEdges) {
+            processAdjVertexInBfs(currentLevel, Q, cc, edge.first);
         }
     }
 

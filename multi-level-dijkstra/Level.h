@@ -34,11 +34,11 @@ struct Level {
 private:
     void calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices);
 
-    void dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) const;
+    void dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices, bool reversed) const;
 
-    void pickEdgesForNewLevel(Vertex *prevLevelVertex);
+    void pickEdgesForNewLevel(Vertex *prevLevelVertex, bool reversed);
 
-    void addChildrenToQueue(Vertex *parent, queue<Vertex *> &Q);
+    void addChildrenToQueue(Vertex *parent, queue<Vertex *> &Q, bool reversed);
 };
 
 #endif //BACHELOR_LEVEL_H

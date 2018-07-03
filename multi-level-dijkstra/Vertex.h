@@ -12,7 +12,7 @@ struct Vertex {
     LL dist;
     Vertex *parent;
     unordered_map<Vertex *, LL> levelEdges;
-    unordered_set<Vertex *> reversedLevelEdges; // useful for finding connected components
+    unordered_map<Vertex *, LL> reversedLevelEdges; // useful for finding connected components
     unordered_map<Vertex *, LL> upwardEdges;
     unordered_map<Vertex *, LL> downwardEdges;
     unordered_set<ConnectedComponent *> adjCC;
@@ -27,7 +27,7 @@ struct Vertex {
 
     inline void linkBackAndForth(Vertex *dest, LL weight) {
         link(dest, weight, levelEdges);
-        dest->reversedLevelEdges.insert(this);
+        dest->link(this, weight, dest->reversedLevelEdges);
     }
 
     inline void linkUp(Vertex *dest, LL weight) {

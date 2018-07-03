@@ -9,8 +9,8 @@ Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(
 
     const VertexSet &prevSelectedVertices = prevLevel.selectedVertices;
 
-    for (Vertex *prevLevelVertex: prevSelectedVertices) {
-        calculateShortestPathTree(prevLevelVertex, prevSelectedVertices);
+    for (Vertex *vertex: this->selectedVertices) {
+        calculateShortestPathTree(*prevSelectedVertices.find(vertex), prevSelectedVertices);
     }
 }
 
@@ -25,11 +25,13 @@ void printPathFromSourceToTarget(Vertex *source, Vertex *target) {
 }
 
 void Level::calculateShortestPathTree(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) {
-    dijkstra(prevLevelVertex, prevSelectedVertices);
-    pickEdgesForNewLevel(prevLevelVertex);
+    dijkstra(prevLevelVertex, prevSelectedVertices, false);
+    pickEdgesForNewLevel(prevLevelVertex, false); // level and upward
+    dijkstra(prevLevelVertex, prevSelectedVertices, true);
+    pickEdgesForNewLevel(prevLevelVertex, true); // downward
 }
 
-void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices) const {
+void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVertices, const bool reversed) const {
     for (Vertex *v: prevSelectedVertices) {
         v->reset();
     }
@@ -46,7 +48,8 @@ void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVerti
         }
         u->visited = true;
 
-        for (auto edge: u->levelEdges) {
+        const unordered_map<Vertex *, LL> &edges = reversed ? u->reversedLevelEdges : u->levelEdges;
+        for (auto edge: edges) {
             Vertex *const dest = edge.first;
             if (dest->visited) {
                 continue;
@@ -63,39 +66,41 @@ void Level::dijkstra(Vertex *prevLevelVertex, const VertexSet &prevSelectedVerti
     }
 }
 
-void Level::pickEdgesForNewLevel(Vertex *prevLevelVertex) {
+void Level::pickEdgesForNewLevel(Vertex *prevLevelVertex, const bool reversed) {
     queue<Vertex *> Q;
-    addChildrenToQueue(prevLevelVertex, Q);
+    addChildrenToQueue(prevLevelVertex, Q, reversed);
 
-    auto selectedVertexIt = selectedVertices.find(prevLevelVertex);
-    const bool isVertexSelectedVertex = selectedVertexIt != selectedVertices.end();
+    Vertex *selectedVertex = *selectedVertices.find(prevLevelVertex);
 
     while (!Q.empty()) {
-        Vertex *v = Q.front();
+        Vertex *dest = Q.front();
         Q.pop();
-        auto destSelectedVertexIt = selectedVertices.find(v);
+        auto destSelectedVertexIt = selectedVertices.find(dest);
         const bool isDestSelectedVertex = destSelectedVertexIt != selectedVertices.end();
 
-        if (isVertexSelectedVertex) {
-            if (isDestSelectedVertex) {
-                (*selectedVertexIt)->link(*destSelectedVertexIt, v->dist); // level edge
-            }
-            else {
-                (*selectedVertexIt)->linkDown(v, v->dist); // downward edge
+        if (reversed) {
+            if (!isDestSelectedVertex) {
+                dest->linkUp(selectedVertex, dest->dist); // upward edge
             }
         }
-        else if (isDestSelectedVertex) {
-            prevLevelVertex->linkUp(*destSelectedVertexIt, v->dist); // upward edge
+        else {
+            if (isDestSelectedVertex) {
+                selectedVertex->linkBackAndForth(*destSelectedVertexIt, dest->dist); // level edge + reversed
+            }
+            else {
+                selectedVertex->linkDown(dest, dest->dist); // downward edge
+            }
         }
 
         if (!isDestSelectedVertex) {
-            addChildrenToQueue(v, Q);
+            addChildrenToQueue(dest, Q, reversed);
         }
     }
 }
 
-void Level::addChildrenToQueue(Vertex *parent, std::queue<Vertex *> &Q) {
-    for (auto edge: parent->levelEdges) {
+void Level::addChildrenToQueue(Vertex *parent, std::queue<Vertex *> &Q, const bool reversed) {
+    const unordered_map<Vertex *, LL> &edges = reversed ? parent->reversedLevelEdges : parent->levelEdges;
+    for (auto edge: edges) {
         if (edge.first->parent == parent) {
             Q.push(edge.first);
         }
