@@ -121,11 +121,52 @@ void calculate(MultilevelGraph &M) {
 }
 
 vector<Vertex *> getVerticesSortedByDegree() {
-    vector<Vertex *> result = originalVertices;
-    sort(result.begin(), result.end(), [](Vertex *a, Vertex *b) -> bool { return degrees[a->id] > degrees[b->id]; });
+    vector<Vertex *> result;
+    auto comp = [](Vertex *a, Vertex *b) -> bool {
+        return degrees[a->id] == degrees[b->id]
+               ? a->id < b->id
+               : degrees[a->id] > degrees[b->id];
+    };
+    auto Q = set<Vertex *, decltype(comp)>(comp);
+    for (Vertex *v:originalVertices) {
+        Q.insert(v);
+    }
+
+    while (!Q.empty()) {
+        Vertex *top = *Q.begin();
+        result.push_back(top);
+        Q.erase(Q.begin());
+
+        for (auto edge: top->levelEdges) {
+            Vertex *v = edge.first;
+            if (Q.find(v) != Q.end()) {
+                Q.erase(v);
+                --degrees[v->id];
+                Q.insert(v);
+            }
+        }
+        for (auto edge: top->reversedLevelEdges) {
+            Vertex *v = edge.first;
+            if (Q.find(v) != Q.end()) {
+                Q.erase(v);
+                --degrees[v->id];
+                Q.insert(v);
+            }
+        }
+    }
+
+//    int counter = 0;
 //    for (Vertex *v: result) {
-//        cout << v->id << ": " << degrees[v->id] << endl;
+//        if (degrees[v->id] == 0) {
+//            break;
+//        }
+//        cout << v->id << " -> " << degrees[v->id] << endl;
+//        if (degrees[v->id] > 100) {
+//            counter++;
+//        }
 //    }
+//    cout << endl << counter << endl << endl;
+
     return result;
 }
 

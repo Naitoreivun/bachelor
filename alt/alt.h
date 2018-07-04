@@ -44,16 +44,6 @@ private:
             return 0ll;
         }
 
-//    auto vLandmarkIt = landmarkIds.find(v);
-//    if (vLandmarkIt != landmarkIds.end()) {
-//        return t->landmarkDist[FROM][vLandmarkIt->second];
-//    }
-//
-//    auto tLandmarkIt = landmarkIds.find(t);
-//    if (tLandmarkIt != landmarkIds.end()) {
-//        return v->landmarkDist[TO][tLandmarkIt->second];
-//    }
-
         LL result = 0ll;
         for (int landmarkId: activeLandmarkIds) {
             const LL fromDiff = t->landmarkDist[FROM][landmarkId] - v->landmarkDist[FROM][landmarkId];
