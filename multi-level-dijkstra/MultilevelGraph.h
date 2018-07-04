@@ -30,10 +30,6 @@ struct MultilevelGraph {
 
     void addLevel(const vector<Vertex *> &selectedVertices);
 
-    void printAll();
-
-    void printConnectedComponents();
-
     void prepareVerticesForQueries();
 
     LL calculateDistance(Vertex *source, Vertex *target);
@@ -70,11 +66,6 @@ private:
 
     inline void relax(Vertex *u, Vertex *v, LL uvDist, unsigned int anotherLevel,
                       set<VertexAndLevel, VertexAndLevelDijkstraComparator> &Q) const;
-
-    void printCCPaths(const vector<ConnectedComponent *> &upwardCCSourcePath,
-                      const vector<ConnectedComponent *> &upwardCCTargetPath) const;
-
-    void printPathFromSourceToTarget(Vertex *source, Vertex *target);
 
     void createConnectedComponentsForLevelZero();
 

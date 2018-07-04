@@ -6,57 +6,16 @@ MultilevelGraph::MultilevelGraph(const vector<Vertex *> &originalVertices) {
     for (Vertex *vertex: originalVertices) {
         vertexSet.insert(vertex);
     }
-//    cout << vertexSet.size();
     levels.emplace_back(0, vertexSet);
 }
 
 void MultilevelGraph::addLevel(const vector<Vertex *> &selectedVertices) {
-//    cout << "\nLEVEL " << levels.size() << "(" << selectedVertices.size() << ")" << endl;
-
     VertexSet vertexSet;
     for (Vertex *vertex: selectedVertices) {
-        Vertex *newVertex = new Vertex(vertex->id);
-//        cout << newVertex->id << "(" << newVertex << ")" << endl;
-        vertexSet.insert(newVertex);
+        vertexSet.insert(new Vertex(vertex->id));
     }
 
     levels.emplace_back(vertexSet, levels.back());
-}
-
-void MultilevelGraph::printAll() {
-    for (Level &level: levels) {
-        cout << "LEVEL " << level.value << ":\n";
-        for (Vertex *u: level.selectedVertices) {
-//            cout << u->id << ":\n";
-            cout << u->id << "(" << u << "):\n";
-            cout << "\tupward:";
-            for (auto edge: u->upwardEdges) {
-                cout << " " << edge.first->id << "(" << edge.second << ")";
-            }
-            cout << "\n\tlevel:";
-            for (auto edge: u->levelEdges) {
-                cout << " " << edge.first->id << "(" << edge.second << ")";
-            }
-            cout << "\n\tdownward:";
-            for (auto edge: u->downwardEdges) {
-                cout << " " << edge.first->id << "(" << edge.second << ")";
-            }
-            cout << "\n";
-        }
-        cout << "\n";
-    }
-    cout << endl;
-}
-
-void MultilevelGraph::printConnectedComponents() {
-    cout << "Connected components:\n";
-    for (Level &level: levels) {
-        cout << "LEVEL " << level.value << " (size: " << level.connectedComponents.size() << "):\n";
-        for (auto cc: level.connectedComponents) {
-            cc->print();
-        }
-        cout << endl;
-    }
 }
 
 void MultilevelGraph::createConnectedComponents() {
@@ -169,8 +128,6 @@ LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
     popEveryCommonCCAncestors(upwardCCSourcePath, upwardCCTargetPath);
     const unsigned int lastCommonLevel = upwardCCSourcePath.size() - 1;
 
-//    printCCPaths(upwardCCSourcePath, upwardCCTargetPath);
-
     vector<Vertex *> affectedVertices;
     set<VertexAndLevel, VertexAndLevelDijkstraComparator> Q;
     source->dist = 0;
@@ -208,8 +165,6 @@ LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
         }
     }
 
-//    printPathFromSourceToTarget(source, target);
-
     const LL result = target->dist;
 
     for (Vertex *v : affectedVertices) {
@@ -218,17 +173,6 @@ LL MultilevelGraph::calculateDistance(Vertex *source, Vertex *target) {
     for (const VertexAndLevel &pair: Q) {
         pair.vertex->reset();
     }
-
-//    for (ConnectedComponent *cc: upwardCCSourcePath) {
-//        for (Vertex *v: cc->adjVertices) {
-//            v->reset();
-//        }
-//    }
-//    for (ConnectedComponent *cc: upwardCCTargetPath) {
-//        for (Vertex *v: cc->adjVertices) {
-//            v->reset();
-//        }
-//    }
 
     return result;
 }
@@ -244,19 +188,6 @@ inline void MultilevelGraph::relaxUpperOrLowerVertex(Vertex *const u,
         anotherVertex->parent = u;
         Q.insert(lowerVL);
     }
-}
-
-void MultilevelGraph::printCCPaths(const vector<ConnectedComponent *> &upwardCCSourcePath,
-                                   const vector<ConnectedComponent *> &upwardCCTargetPath) const {
-    cout << "Source CC path:\n";
-    for (ConnectedComponent *cc: upwardCCSourcePath) {
-        cc->print();
-    }
-    cout << "Target CC path:\n";
-    for (ConnectedComponent *cc: upwardCCTargetPath) {
-        cc->print();
-    }
-    cout << endl;
 }
 
 inline vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *vertex0lvl) {
@@ -366,8 +297,6 @@ LL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
         }
     }
 
-//    printPathFromSourceToTarget(source, target);
-
     const LL result = target->dist;
     for (Vertex *v : affectedVertices) {
         v->reset();
@@ -377,14 +306,4 @@ LL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
     }
 
     return result;
-}
-
-void MultilevelGraph::printPathFromSourceToTarget(Vertex *source, Vertex *target) {
-    if (source != target) {
-        printPathFromSourceToTarget(source, target->parent);
-    }
-    else {
-        cout << endl;
-    }
-    cout << " -> " << target->id << "(" << target << ", " << target->dist << ")";
 }

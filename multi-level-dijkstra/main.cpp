@@ -43,9 +43,6 @@ int main() {
     milliseconds stopPre = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     cout << "\npreprocessing time:\n\t" << (stopPre.count() - startPre.count()) << "\n\n";
 
-//    M.printAll();
-//    M.printConnectedComponents();
-
     loadQueries();
 
 //    calculate(M);
@@ -154,18 +151,6 @@ vector<Vertex *> getVerticesSortedByDegree() {
             }
         }
     }
-
-//    int counter = 0;
-//    for (Vertex *v: result) {
-//        if (degrees[v->id] == 0) {
-//            break;
-//        }
-//        cout << v->id << " -> " << degrees[v->id] << endl;
-//        if (degrees[v->id] > 100) {
-//            counter++;
-//        }
-//    }
-//    cout << endl << counter << endl << endl;
 
     return result;
 }
