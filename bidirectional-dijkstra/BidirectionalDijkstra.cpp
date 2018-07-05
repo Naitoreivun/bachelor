@@ -45,16 +45,15 @@ LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target
             if (dest->visited[direction]) {
                 continue;
             }
-
             const LL newDist = u->dist[direction] + edge.second;
-            if (newDist < dest->dist[direction]) {
+            if (dest->visited[!direction]) {
+                result = min(result, newDist + dest->dist[!direction]);
+            }
+            else if (newDist < dest->dist[direction]) {
                 direction == FORWARD ? forwardQueue.erase(dest) : backwardQueue.erase(dest);
                 dest->dist[direction] = newDist;
                 dest->parent[direction] = u;
                 direction == FORWARD ? forwardQueue.insert(dest) : backwardQueue.insert(dest);
-            }
-            if (dest->visited[!direction]) {
-                result = min(result, newDist + dest->dist[!direction]);
             }
         }
     }
