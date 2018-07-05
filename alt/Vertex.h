@@ -8,7 +8,7 @@ const int TO = 1;
 
 const int FORWARD = 0;
 const int BACKWARD = 1;
-
+// todo data struct
 struct Vertex {
     const int id;
     vector<LL> landmarkDist[2]; // FROM / TO

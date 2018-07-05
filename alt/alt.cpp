@@ -167,6 +167,88 @@ LL Alt::altDijkstra(Vertex *source, Vertex *target) {
     return result;
 }
 
+LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
+    if (source == target) {
+        return 0ll;
+    }
+    const vector<int> &&activeLandmarkIds = selectActiveLandmarks(source, target);
+    const vector<int> &&activeLandmarkIds2 = selectActiveLandmarks(target, source);
+
+    set<Vertex *, VertexDijkstraFComparatorForward> forwardQueue;
+    set<Vertex *, VertexDijkstraFComparatorBackward> backwardQueue;
+    vector<Vertex *> affectedVertices;
+
+    source->dist[FORWARD] = 0;
+    source->f[FORWARD] = heuristic(source, target, activeLandmarkIds);
+    forwardQueue.insert(source);
+
+    target->dist[BACKWARD] = 0;
+    target->f[BACKWARD] = heuristic(target, source, activeLandmarkIds2);
+    backwardQueue.insert(target);
+
+    int direction;
+    Vertex *u;
+    LL result = INF;
+
+    while (!forwardQueue.empty() && !backwardQueue.empty()) {
+        if ((*forwardQueue.begin())->dist[FORWARD] < (*backwardQueue.begin())->dist[BACKWARD]) {
+            u = *forwardQueue.begin();
+            direction = FORWARD;
+            forwardQueue.erase(forwardQueue.begin());
+        }
+        else {
+            u = *backwardQueue.begin();
+            direction = BACKWARD;
+            backwardQueue.erase(backwardQueue.begin());
+        }
+        affectedVertices.push_back(u);
+        if (u->f[direction] >= result) {
+            break;
+        }
+        if (u->visited[direction]) {
+            continue;
+        }
+        u->visited[direction] = true;
+
+        for (auto edge: u->edges[direction]) {
+            Vertex *const dest = edge.first;
+            if (dest->visited[direction]) {
+                continue;
+            }
+            const LL tentativeDist = u->dist[direction] + edge.second;
+
+            if (dest->visited[!direction]) {
+                result = min(result, tentativeDist + dest->dist[!direction]);
+            }
+            else if (tentativeDist < dest->dist[direction]) {
+                direction == FORWARD ? forwardQueue.erase(dest) : backwardQueue.erase(dest);
+                dest->dist[direction] = tentativeDist;
+                dest->parent[direction] = u;
+                if (direction == FORWARD) {
+                    dest->f[direction] = dest->dist[direction] + heuristic(dest, target, activeLandmarkIds);
+                    forwardQueue.insert(dest);
+                }
+                else {
+                    dest->f[direction] = dest->dist[direction] + heuristic(dest, source, activeLandmarkIds2);
+                    backwardQueue.insert(dest);
+                }
+            }
+        }
+    }
+
+    for (Vertex *v: forwardQueue) {
+        v->fullReset(FORWARD);
+    }
+    for (Vertex *v: backwardQueue) {
+        v->fullReset(BACKWARD);
+    }
+    for (Vertex *v : affectedVertices) {
+        v->fullReset();
+    }
+
+    return result;
+}
+
 LL Alt::regularDijkstra(Vertex *source, Vertex *target) {
     if (source == target) {
         return 0ll;

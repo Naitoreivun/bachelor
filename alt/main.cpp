@@ -15,6 +15,10 @@ bool calculateDistance(Alt &alt, int v1, int v2);
 
 void calculate(Alt &alt);
 
+bool bidiCalculateDistance(Alt &alt, int v1, int v2);
+
+void bidiCalculate(Alt &alt);
+
 void benchmark(Alt &alt);
 
 void printLandmarkDistances();
@@ -43,8 +47,10 @@ int main() {
 
     loadQueries();
 
+//    bidiCalculateDistance(alt, 3, 11);
+    bidiCalculate(alt);
 //    calculate(alt);
-    benchmark(alt);
+//    benchmark(alt);
 
     cout << "finish" << endl;
     return 0;
@@ -128,10 +134,45 @@ bool calculateDistance(Alt &alt, int v1, int v2) {
     return altDist == regDist;
 }
 
+void bidiCalculate(Alt &alt) {
+    bool ok = true;
+    for (pair<int, int> &query: queries) {
+        ok &= bidiCalculateDistance(alt, query.first, query.second);
+    }
+    cout << "\n" << (ok ? "Tests passed" : "Some tests failed") << endl;
+}
+
+bool bidiCalculateDistance(Alt &alt, int v1, int v2) {
+    const auto source = graph[v1 - 1];
+    const auto target = graph[v2 - 1];
+
+    const LL bidiAltDist = alt.bidirectionalAltDijkstra(source, target);
+    const LL altDist = alt.altDijkstra(source, target);
+
+    if (bidiAltDist != altDist) {
+        cout << v1 << " -> " << v2 << " --- ERROR:\n\tBIDI ALT -> " << bidiAltDist << "\n\tALT -> " << altDist << "\n";
+        return false;
+    }
+//    else {
+//        cout << v1 << " -> " << v2 << " --- OK ( " << altDist << " )\n";
+//        return true;
+//    }
+
+    return bidiAltDist == altDist;
+}
+
 
 void benchmark(Alt &alt) {
 //    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 //    cout << (ms.count()) << endl;
+
+    cout << "bidirectional alt start\n";
+    milliseconds startBidiAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    for (pair<int, int> &query: queries) {
+        alt.bidirectionalAltDijkstra(graph[query.first - 1], graph[query.second - 1]);
+    }
+    milliseconds stopBidiAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    cout << "\nbidirectional alt stop:\n\t" << (stopBidiAlt.count() - startBidiAlt.count()) << "\n\n";
 
     cout << "alt start\n";
     milliseconds startAlt = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
