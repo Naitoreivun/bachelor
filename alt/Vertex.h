@@ -6,32 +6,41 @@
 const int FROM = 0;
 const int TO = 1;
 
+const int FORWARD = 0;
+const int BACKWARD = 1;
+
 struct Vertex {
     const int id;
-    bool visited;
-    LL dist;
-    LL f;
-    Vertex *parent;
-    unordered_map<Vertex *, LL> edges;
-    unordered_map<Vertex *, LL> reversedEdges;
-    vector<LL> landmarkDist[2];
+    vector<LL> landmarkDist[2]; // FROM / TO
+
+    // FORWARD / BACKWARD (for bidirectional version)
+    bool visited[2];
+    LL dist[2];
+    LL f[2];
+    Vertex *parent[2];
+    unordered_map<Vertex *, LL> edges[2];
 
     explicit Vertex(int id);
 
     inline void link(Vertex *dest, LL weight) {
-        edges[dest] = weight;
-        dest->reversedEdges[this] = weight;
+        edges[FORWARD][dest] = weight;
+        dest->edges[BACKWARD][this] = weight;
     }
-
+    
     inline void fullReset() {
-        f = INF;
-        reset();
+        fullReset(FORWARD);
+        fullReset(BACKWARD);
+    }
+    
+    inline void fullReset(const int direction) {
+        f[direction] = INF;
+        reset(direction);
     }
 
-    inline void reset() {
-        parent = nullptr;
-        dist = INF;
-        visited = false;
+    inline void reset(const int direction) {
+        parent[direction] = nullptr;
+        dist[direction] = INF;
+        visited[direction] = false;
     }
 };
 
@@ -39,7 +48,11 @@ struct VertexDijkstraDefaultComparator {
     bool operator()(const Vertex *v1, const Vertex *v2) const;
 };
 
-struct VertexDijkstraFComparator {
+struct VertexDijkstraFComparatorForward {
+    bool operator()(const Vertex *v1, const Vertex *v2) const;
+};
+
+struct VertexDijkstraFComparatorBackward {
     bool operator()(const Vertex *v1, const Vertex *v2) const;
 };
 

@@ -39,23 +39,18 @@ private:
         return result;
     }
 
-    inline LL heuristic(Vertex *v, Vertex *t, const vector<int> &activeLandmarkIds) {
-        if (v == t) {
+    inline LL heuristic(Vertex *s, Vertex *t, const vector<int> &activeLandmarkIds) {
+        if (s == t) {
             return 0ll;
         }
 
         LL result = 0ll;
         for (int landmarkId: activeLandmarkIds) {
-            const LL fromDiff = t->landmarkDist[FROM][landmarkId] - v->landmarkDist[FROM][landmarkId];
-            const LL toDiff = v->landmarkDist[TO][landmarkId] - t->landmarkDist[TO][landmarkId];
+            const LL est = max(t->landmarkDist[FROM][landmarkId] - s->landmarkDist[FROM][landmarkId],
+                               s->landmarkDist[TO][landmarkId] - t->landmarkDist[TO][landmarkId]);
 
-            if (fromDiff > toDiff) {
-                if (fromDiff > result) {
-                    result = fromDiff;
-                }
-            }
-            else if (toDiff > result) {
-                result = toDiff;
+            if (est > result && est != INF) {
+                result = est;
             }
         }
 
