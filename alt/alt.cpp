@@ -172,18 +172,14 @@ LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
         return 0ll;
     }
     const vector<int> &&activeLandmarkIds = selectActiveLandmarks(source, target);
-    const vector<int> &&activeLandmarkIds2 = selectActiveLandmarks(target, source);
 
     set<Vertex *, VertexDijkstraFComparatorForward> forwardQueue;
     set<Vertex *, VertexDijkstraFComparatorBackward> backwardQueue;
     vector<Vertex *> affectedVertices;
 
-    source->dist[FORWARD] = 0;
-    source->f[FORWARD] = heuristic(source, target, activeLandmarkIds);
+    source->dist[FORWARD] = target->dist[BACKWARD] = 0;
+    source->f[FORWARD] = target->f[BACKWARD] = heuristic(source, target, activeLandmarkIds);
     forwardQueue.insert(source);
-
-    target->dist[BACKWARD] = 0;
-    target->f[BACKWARD] = heuristic(target, source, activeLandmarkIds2);
     backwardQueue.insert(target);
 
     int direction;
@@ -229,7 +225,7 @@ LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
                     forwardQueue.insert(dest);
                 }
                 else {
-                    dest->f[direction] = dest->dist[direction] + heuristic(dest, source, activeLandmarkIds2);
+                    dest->f[direction] = dest->dist[direction] + heuristic(source, dest, activeLandmarkIds);
                     backwardQueue.insert(dest);
                 }
             }
