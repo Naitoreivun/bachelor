@@ -1,1 +1,0 @@
-add_executable(mld main.cpp ../imports_and_configs.h Vertex.cpp Vertex.h Level.cpp Level.h MultilevelGraph.cpp MultilevelGraph.h ConnectedComponent.cpp ConnectedComponent.h)

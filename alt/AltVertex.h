@@ -1,15 +1,9 @@
-#ifndef BACHELOR_VERTEX_H
-#define BACHELOR_VERTEX_H
+#ifndef BACHELOR_ALT_VERTEX_H
+#define BACHELOR_ALT_VERTEX_H
 
 #include "../imports_and_configs.h"
 
-const int FROM = 0;
-const int TO = 1;
-
-const int FORWARD = 0;
-const int BACKWARD = 1;
-// todo data struct
-struct Vertex {
+struct AltVertex {
     const int id;
     vector<LL> landmarkDist[2]; // FROM / TO
 
@@ -17,12 +11,12 @@ struct Vertex {
     bool visited[2];
     LL dist[2];
     LL f[2];
-    Vertex *parent[2];
-    unordered_map<Vertex *, LL> edges[2];
+    AltVertex *parent[2];
+    unordered_map<AltVertex *, LL> edges[2];
 
-    explicit Vertex(int id);
+    explicit AltVertex(int id);
 
-    inline void link(Vertex *dest, LL weight) {
+    inline void link(AltVertex *dest, LL weight) {
         edges[FORWARD][dest] = weight;
         dest->edges[BACKWARD][this] = weight;
     }
@@ -44,16 +38,16 @@ struct Vertex {
     }
 };
 
-struct VertexDijkstraDefaultComparator {
-    bool operator()(const Vertex *v1, const Vertex *v2) const;
+struct AltVertexDijkstraDefaultComparator {
+    bool operator()(const AltVertex *v1, const AltVertex *v2) const;
 };
 
-struct VertexDijkstraFComparatorForward {
-    bool operator()(const Vertex *v1, const Vertex *v2) const;
+struct AltVertexDijkstraFComparatorForward {
+    bool operator()(const AltVertex *v1, const AltVertex *v2) const;
 };
 
-struct VertexDijkstraFComparatorBackward {
-    bool operator()(const Vertex *v1, const Vertex *v2) const;
+struct AltVertexDijkstraFComparatorBackward {
+    bool operator()(const AltVertex *v1, const AltVertex *v2) const;
 };
 
-#endif //BACHELOR_VERTEX_H
+#endif //BACHELOR_ALT_VERTEX_H

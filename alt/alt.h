@@ -2,29 +2,27 @@
 #define BACHELOR_ALT_H
 
 #include "../imports_and_configs.h"
-#include "Vertex.h"
+#include "AltVertex.h"
 
 struct Alt {
-    vector<Vertex *> landmarks;
-    unordered_map<Vertex *, int> landmarkIds;
-    vector<Vertex *> *graph;
+    vector<AltVertex *> landmarks;
+    unordered_map<AltVertex *, int> landmarkIds;
+    vector<AltVertex *> *graph;
 
-    Alt(vector<Vertex *> &graph, int landmarksCount);
+    Alt(vector<AltVertex *> &graph, int landmarksCount);
 
-    LL altDijkstra(Vertex *source, Vertex *target);
+    LL altDijkstra(AltVertex *source, AltVertex *target);
 
-    LL bidirectionalAltDijkstra(Vertex *source, Vertex *target);
-
-    LL regularDijkstra(Vertex *source, Vertex *target);
+    LL bidirectionalAltDijkstra(AltVertex *source, AltVertex *target);
 
 private:
     void selectLandmarks(int landmarksCount);
 
-    void findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks);
+    void findNewFarthestLandmark(const vector<AltVertex *> &currentLandmarks);
 
     void calculateLandmarkDistances(int landmarkId, int direction);
 
-    inline vector<int> selectActiveLandmarks(Vertex *source, Vertex *target) {
+    inline vector<int> selectActiveLandmarks(AltVertex *source, AltVertex *target) {
         vector<int> result = {0, 0};
 
         for (int landmarkId = 1; landmarkId < landmarks.size(); ++landmarkId) {
@@ -41,7 +39,7 @@ private:
         return result;
     }
 
-    inline LL heuristic(Vertex *s, Vertex *t, const vector<int> &activeLandmarkIds) {
+    inline LL heuristic(AltVertex *s, AltVertex *t, const vector<int> &activeLandmarkIds) {
         if (s == t) {
             return 0ll;
         }

@@ -1,14 +1,14 @@
 #include "BidirectionalDijkstra.h"
 #include <set>
 
-LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
+LL bidirectionalDijkstra(vector<BidiVertex *> &graph, BidiVertex *source, BidiVertex *target) {
     if (source == target) {
         return 0ll;
     }
 
-    set<Vertex *, VertexDijkstraForwardComparator> forwardQueue;
-    set<Vertex *, VertexDijkstraBackwardComparator> backwardQueue;
-    vector<Vertex *> affectedVertices;
+    set<BidiVertex *, BidiVertexDijkstraForwardComparator> forwardQueue;
+    set<BidiVertex *, BidiVertexDijkstraBackwardComparator> backwardQueue;
+    vector<BidiVertex *> affectedVertices;
 
     source->dist[FORWARD] = 0;
     target->dist[BACKWARD] = 0;
@@ -17,7 +17,7 @@ LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target
     backwardQueue.insert(target);
 
     int direction;
-    Vertex *u;
+    BidiVertex *u;
     LL result = INF;
 
     while (!forwardQueue.empty() && !backwardQueue.empty()) {
@@ -41,7 +41,7 @@ LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target
         u->visited[direction] = true;
 
         for (auto edge: u->edges[direction]) {
-            Vertex *const dest = edge.first;
+            BidiVertex *const dest = edge.first;
             if (dest->visited[direction]) {
                 continue;
             }
@@ -58,64 +58,14 @@ LL bidirectionalDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target
         }
     }
 
-    for (Vertex *v: forwardQueue) {
+    for (BidiVertex *v: forwardQueue) {
         v->reset(FORWARD);
     }
-    for (Vertex *v: backwardQueue) {
+    for (BidiVertex *v: backwardQueue) {
         v->reset(BACKWARD);
     }
-    for (Vertex *v : affectedVertices) {
+    for (BidiVertex *v : affectedVertices) {
         v->reset();
-    }
-
-    return result;
-}
-
-LL regularDijkstra(vector<Vertex *> &graph, Vertex *source, Vertex *target) {
-    if (source == target) {
-        return 0ll;
-    }
-
-    set<Vertex *, VertexDijkstraForwardComparator> Q;
-    vector<Vertex *> affectedVertices;
-
-    source->dist[FORWARD] = 0;
-    Q.insert(source);
-
-    while (!Q.empty()) {
-        Vertex *u = *Q.begin();
-        Q.erase(u);
-        affectedVertices.push_back(u);
-        if (u == target) {
-            break;
-        }
-        if (u->visited[FORWARD]) {
-            continue;
-        }
-        u->visited[FORWARD] = true;
-
-        for (auto edge: u->edges[FORWARD]) {
-            Vertex *const dest = edge.first;
-            if (dest->visited[FORWARD]) {
-                continue;
-            }
-
-            const LL newDist = u->dist[FORWARD] + edge.second;
-            if (newDist < dest->dist[FORWARD]) {
-                Q.erase(dest);
-                dest->dist[FORWARD] = newDist;
-                dest->parent[FORWARD] = u;
-                Q.insert(dest);
-            }
-        }
-    }
-
-    const LL result = target->dist[FORWARD];
-    for (Vertex *v : affectedVertices) {
-        v->reset(FORWARD);
-    }
-    for (Vertex *v : Q) {
-        v->reset(FORWARD);
     }
 
     return result;

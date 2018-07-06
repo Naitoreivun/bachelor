@@ -1,10 +1,9 @@
 #include <set>
 #include <algorithm>
-#include <chrono>
 #include "alt.h"
 
 
-Alt::Alt(vector<Vertex *> &graph, const int landmarksCount) : graph(&graph) {
+Alt::Alt(vector<AltVertex *> &graph, const int landmarksCount) : graph(&graph) {
     selectLandmarks(landmarksCount);
 
     for (int i = 0; i < landmarks.size(); ++i) {
@@ -12,13 +11,13 @@ Alt::Alt(vector<Vertex *> &graph, const int landmarksCount) : graph(&graph) {
         calculateLandmarkDistances(i, TO);
     }
 
-    for (Vertex *v: graph) {
+    for (AltVertex *v: graph) {
         v->fullReset();
     }
 }
 
 void Alt::selectLandmarks(const int landmarksCount) {
-    vector<Vertex *> dummyLandmarkSingleton;
+    vector<AltVertex *> dummyLandmarkSingleton;
     dummyLandmarkSingleton.push_back(graph[0][0]);
     findNewFarthestLandmark(dummyLandmarkSingleton);
     for (int i = 1; i < landmarksCount; ++i) {
@@ -29,16 +28,16 @@ void Alt::selectLandmarks(const int landmarksCount) {
     }
 }
 
-void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
-    set<Vertex *, VertexDijkstraDefaultComparator> Q;
+void Alt::findNewFarthestLandmark(const vector<AltVertex *> &currentLandmarks) {
+    set<AltVertex *, AltVertexDijkstraDefaultComparator> Q;
 
-    for (Vertex *landmark: currentLandmarks) {
+    for (AltVertex *landmark: currentLandmarks) {
         landmark->dist[FORWARD] = 0;
         Q.insert(landmark);
     }
 
     while (!Q.empty()) {
-        Vertex *u = *Q.begin();
+        AltVertex *u = *Q.begin();
         Q.erase(u);
         if (u->visited[FORWARD]) {
             continue;
@@ -46,7 +45,7 @@ void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
         u->visited[FORWARD] = true;
 
         for (auto edge: u->edges[FORWARD]) {
-            Vertex *const dest = edge.first;
+            AltVertex *const dest = edge.first;
             if (dest->visited[FORWARD]) {
                 continue;
             }
@@ -60,10 +59,10 @@ void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
         }
     }
 
-    Vertex *landmarkCandidate = nullptr;
+    AltVertex *landmarkCandidate = nullptr;
     LL currentMaxDist = 0ll;
 
-    for (Vertex *v: *graph) {
+    for (AltVertex *v: *graph) {
         if (v->dist[FORWARD] > currentMaxDist && find(landmarks.begin(), landmarks.end(), v) == landmarks.end()) {
             landmarkCandidate = v;
             currentMaxDist = v->dist[FORWARD];
@@ -74,23 +73,23 @@ void Alt::findNewFarthestLandmark(const vector<Vertex *> &currentLandmarks) {
 }
 
 void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) {
-    for (Vertex *vertex: *graph) {
+    for (AltVertex *vertex: *graph) {
         vertex->landmarkDist[direction].push_back(INF);
         vertex->visited[FORWARD] = false;
     }
     landmarks[landmarkId]->landmarkDist[direction][landmarkId] = 0;
 
-    auto comp = [&landmarkId, &direction](Vertex *v1, Vertex *v2) -> bool {
+    auto comp = [&landmarkId, &direction](AltVertex *v1, AltVertex *v2) -> bool {
         const LL dist1 = v1->landmarkDist[direction][landmarkId];
         const LL dist2 = v2->landmarkDist[direction][landmarkId];
         return dist1 == dist2 ? v1->id < v2->id : dist1 < dist2;
     };
-    auto Q = set<Vertex *, decltype(comp)>(comp);
+    auto Q = set<AltVertex *, decltype(comp)>(comp);
 
     Q.insert(landmarks[landmarkId]);
 
     while (!Q.empty()) {
-        Vertex *u = *Q.begin();
+        AltVertex *u = *Q.begin();
         Q.erase(u);
         if (u->visited[FORWARD]) {
             continue;
@@ -98,7 +97,7 @@ void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) 
         u->visited[FORWARD] = true;
 
         for (auto edge: u->edges[direction]) {
-            Vertex *const dest = edge.first;
+            AltVertex *const dest = edge.first;
             if (dest->visited[FORWARD]) {
                 continue;
             }
@@ -114,7 +113,7 @@ void Alt::calculateLandmarkDistances(const int landmarkId, const int direction) 
 }
 
 
-LL Alt::altDijkstra(Vertex *source, Vertex *target) {
+LL Alt::altDijkstra(AltVertex *source, AltVertex *target) {
     if (source == target) {
         return 0ll;
     }
@@ -123,12 +122,12 @@ LL Alt::altDijkstra(Vertex *source, Vertex *target) {
 
     source->dist[FORWARD] = 0;
     source->f[FORWARD] = heuristic(source, target, activeLandmarkIds);
-    set<Vertex *, VertexDijkstraFComparatorForward> Q;
-    vector<Vertex *> affectedVertices;
+    set<AltVertex *, AltVertexDijkstraFComparatorForward> Q;
+    vector<AltVertex *> affectedVertices;
     Q.insert(source);
 
     while (!Q.empty()) {
-        Vertex *u = *Q.begin();
+        AltVertex *u = *Q.begin();
         Q.erase(u);
         affectedVertices.push_back(u);
         if (u == target) {
@@ -140,7 +139,7 @@ LL Alt::altDijkstra(Vertex *source, Vertex *target) {
         u->visited[FORWARD] = true;
 
         for (auto edge: u->edges[FORWARD]) {
-            Vertex *const dest = edge.first;
+            AltVertex *const dest = edge.first;
             if (dest->visited[FORWARD]) {
                 continue;
             }
@@ -157,25 +156,25 @@ LL Alt::altDijkstra(Vertex *source, Vertex *target) {
     }
 
     const LL result = target->dist[FORWARD];
-    for (Vertex *v : affectedVertices) {
+    for (AltVertex *v : affectedVertices) {
         v->fullReset(FORWARD);
     }
-    for (Vertex *v : Q) {
+    for (AltVertex *v : Q) {
         v->fullReset(FORWARD);
     }
 
     return result;
 }
 
-LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
+LL Alt::bidirectionalAltDijkstra(AltVertex *source, AltVertex *target) {
     if (source == target) {
         return 0ll;
     }
     const vector<int> &&activeLandmarkIds = selectActiveLandmarks(source, target);
 
-    set<Vertex *, VertexDijkstraFComparatorForward> forwardQueue;
-    set<Vertex *, VertexDijkstraFComparatorBackward> backwardQueue;
-    vector<Vertex *> affectedVertices;
+    set<AltVertex *, AltVertexDijkstraFComparatorForward> forwardQueue;
+    set<AltVertex *, AltVertexDijkstraFComparatorBackward> backwardQueue;
+    vector<AltVertex *> affectedVertices;
 
     source->dist[FORWARD] = target->dist[BACKWARD] = 0;
     source->f[FORWARD] = target->f[BACKWARD] = heuristic(source, target, activeLandmarkIds);
@@ -183,7 +182,7 @@ LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
     backwardQueue.insert(target);
 
     int direction;
-    Vertex *u;
+    AltVertex *u;
     LL result = INF;
 
     while (!forwardQueue.empty() && !backwardQueue.empty()) {
@@ -207,7 +206,7 @@ LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
         u->visited[direction] = true;
 
         for (auto edge: u->edges[direction]) {
-            Vertex *const dest = edge.first;
+            AltVertex *const dest = edge.first;
             if (dest->visited[direction]) {
                 continue;
             }
@@ -232,64 +231,14 @@ LL Alt::bidirectionalAltDijkstra(Vertex *source, Vertex *target) {
         }
     }
 
-    for (Vertex *v: forwardQueue) {
+    for (AltVertex *v: forwardQueue) {
         v->fullReset(FORWARD);
     }
-    for (Vertex *v: backwardQueue) {
+    for (AltVertex *v: backwardQueue) {
         v->fullReset(BACKWARD);
     }
-    for (Vertex *v : affectedVertices) {
+    for (AltVertex *v : affectedVertices) {
         v->fullReset();
-    }
-
-    return result;
-}
-
-LL Alt::regularDijkstra(Vertex *source, Vertex *target) {
-    if (source == target) {
-        return 0ll;
-    }
-
-    set<Vertex *, VertexDijkstraDefaultComparator> Q;
-    vector<Vertex *> affectedVertices;
-
-    source->dist[FORWARD] = 0;
-    Q.insert(source);
-
-    while (!Q.empty()) {
-        Vertex *u = *Q.begin();
-        Q.erase(u);
-        affectedVertices.push_back(u);
-        if (u == target) {
-            break;
-        }
-        if (u->visited[FORWARD]) {
-            continue;
-        }
-        u->visited[FORWARD] = true;
-
-        for (auto edge: u->edges[FORWARD]) {
-            Vertex *const dest = edge.first;
-            if (dest->visited[FORWARD]) {
-                continue;
-            }
-
-            const LL newDist = u->dist[FORWARD] + edge.second;
-            if (newDist < dest->dist[FORWARD]) {
-                Q.erase(dest);
-                dest->dist[FORWARD] = newDist;
-                dest->parent[FORWARD] = u;
-                Q.insert(dest);
-            }
-        }
-    }
-
-    const LL result = target->dist[FORWARD];
-    for (Vertex *v : affectedVertices) {
-        v->reset(FORWARD);
-    }
-    for (Vertex *v : Q) {
-        v->reset(FORWARD);
     }
 
     return result;
