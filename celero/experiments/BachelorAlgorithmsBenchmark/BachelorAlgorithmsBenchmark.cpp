@@ -12,7 +12,7 @@
 
 CELERO_MAIN
 
-class DijkstraExecutionFixture : public celero::TestFixture {
+class DijkstraFixture : public celero::TestFixture {
 public:
     DijkstraProgram *dijkstraProgram;
     BidiProgram *bidiProgram;
@@ -23,7 +23,7 @@ public:
     const vector<string> filenames = {"us-airport"};
     vector<pair<int, int>> queries;
 
-    DijkstraExecutionFixture() {
+    DijkstraFixture() {
 
     }
 
@@ -35,39 +35,6 @@ public:
         return filenameNumber;
     }
 
-    /// Before each sample
-    virtual void setUp(const celero::TestFixture::ExperimentValue &experimentValue) override {
-        const string filename = filenames[experimentValue.Value];
-        const string pathToQueries = "../tests/" + filename + "_queries.in";
-        loadQueries(pathToQueries);
-
-        const string pathToGraph = "../tests/" + filename + ".in";
-        dijkstraProgram = new DijkstraProgram(pathToGraph);
-        bidiProgram = new BidiProgram(pathToGraph);
-        altProgram = new AltProgram(pathToGraph);
-        mldProgram = new MLDProgram(pathToGraph);
-
-        altProgram->preprocessing();
-        mldProgram->preprocessing();
-    }
-
-    /// Before each iteration
-    virtual void onExperimentStart(const celero::TestFixture::ExperimentValue &) override {
-    }
-
-    /// After each iteration
-    virtual void onExperimentEnd() override {
-    }
-
-    /// After each sample
-    virtual void tearDown() override {
-        delete dijkstraProgram;
-        delete bidiProgram;
-        delete altProgram;
-        delete mldProgram;
-    }
-
-private:
     void loadQueries(const string &pathToQueries) {
         fstream file(pathToQueries);
 
@@ -90,25 +57,74 @@ private:
     }
 };
 
+class DijkstraExecutionFixture : public DijkstraFixture {
+public:
+    /// Before each sample
+    virtual void setUp(const celero::TestFixture::ExperimentValue &experimentValue) override {
+        const string filename = filenames[experimentValue.Value];
+        const string pathToQueries = "../tests/" + filename + "_queries.in";
+        loadQueries(pathToQueries);
+
+        const string pathToGraph = "../tests/" + filename + ".in";
+        dijkstraProgram = new DijkstraProgram(pathToGraph);
+        bidiProgram = new BidiProgram(pathToGraph);
+        altProgram = new AltProgram(pathToGraph);
+        mldProgram = new MLDProgram(pathToGraph);
+
+        altProgram->preprocessing();
+        mldProgram->preprocessing();
+    }
+
+    /// After each sample
+    virtual void tearDown() override {
+        delete dijkstraProgram;
+        delete bidiProgram;
+        delete altProgram;
+        delete mldProgram;
+    }
+};
+
 static const int SamplesCount = 1;
 static const int IterationsCount = 1;
 
-BASELINE_F(Dijkstras, RegularDijkstra, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
+BASELINE_F(Execution, RegularDijkstra, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
     dijkstraProgram->processQueries(queries);
 }
 
-BENCHMARK_F(Dijkstras, BidirectionalDijkstra, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
+BENCHMARK_F(Execution, BidirectionalDijkstra, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
     bidiProgram->processQueries(queries);
 }
 
-BENCHMARK_F(Dijkstras, ALT, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
+BENCHMARK_F(Execution, ALT, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
     altProgram->processQueries(queries);
 }
 
-BENCHMARK_F(Dijkstras, BidirectionalALT, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
+BENCHMARK_F(Execution, BidirectionalALT, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
     altProgram->processQueriesBidirectional(queries);
 }
 
-BENCHMARK_F(Dijkstras, MultiLevelGraph, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
+BENCHMARK_F(Execution, MultiLevelGraph, DijkstraExecutionFixture, SamplesCount, IterationsCount) {
     mldProgram->processQueries(queries);
+}
+
+class DijkstraPreprocessingFixture : public DijkstraFixture {
+public:
+    string pathToGraph;
+
+    /// Before each sample
+    virtual void setUp(const celero::TestFixture::ExperimentValue &experimentValue) override {
+        pathToGraph = "../tests/" + filenames[experimentValue.Value] + ".in";
+    }
+};
+
+BASELINE_F(Preprocessing, ALT, DijkstraPreprocessingFixture, 1, 1) {
+    altProgram = new AltProgram(pathToGraph);
+    altProgram->preprocessing();
+    delete altProgram;
+}
+
+BENCHMARK_F(Preprocessing, MultiLevelGraph, DijkstraPreprocessingFixture, 1, 1) {
+    mldProgram = new MLDProgram(pathToGraph);
+    mldProgram->preprocessing();
+    delete mldProgram;
 }

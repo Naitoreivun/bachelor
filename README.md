@@ -1,5 +1,7 @@
 # bachelor
 
+**benchmark tool** - https://github.com/DigitalInBlue/Celero/
+
 ### algorithm sources:
 **Dijkstra** - https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 
