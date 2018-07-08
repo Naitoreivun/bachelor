@@ -1,4 +1,4 @@
-#include <c++/iostream>
+#include <iostream>
 #include "ConnectedComponent.h"
 
 int ConnectedComponent::idCounter = 0;

@@ -4,11 +4,10 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
-#include <limits>
 
 using namespace std;
 typedef long long LL;
-const long long INF = LONG_LONG_MAX;
+const long long INF = 9223372036854775807ll;
 
 const int FORWARD = 0;
 const int BACKWARD = 1;
