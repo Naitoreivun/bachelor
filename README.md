@@ -7,7 +7,7 @@
 
 **BIDI** - https://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/EPP%20shortest%20path%20algorithms.pdf
 
-**ALT (unidirectional version)** - https://www.microsoft.com/en-us/research/wp-content/uploads/2004/07/tr-2004-24.pdf
+**ALT** - https://www.microsoft.com/en-us/research/wp-content/uploads/2004/07/tr-2004-24.pdf
 
 ### test sources:
 https://www.cs.utah.edu/~lifeifei/SpatialDataset.htm

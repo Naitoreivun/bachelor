@@ -60,7 +60,7 @@ struct MLDProgram {
     void preprocessing() {
         auto verticesSortedByDegree = getVerticesSortedByDegree();
         M = new MultilevelGraph(graph);
-        for (int i = 1; i < levelSizes.size(); ++i) {
+        for (unsigned i = 1; i < levelSizes.size(); ++i) {
             M->addLevel(
                     vector<Vertex *>(verticesSortedByDegree.begin(), verticesSortedByDegree.begin() + levelSizes[i]));
         }

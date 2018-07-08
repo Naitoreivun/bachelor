@@ -25,7 +25,7 @@ private:
     inline vector<int> selectActiveLandmarks(AltVertex *source, AltVertex *target) {
         vector<int> result = {0, 0};
 
-        for (int landmarkId = 1; landmarkId < landmarks.size(); ++landmarkId) {
+        for (unsigned landmarkId = 1; landmarkId < landmarks.size(); ++landmarkId) {
             if (target->landmarkDist[FROM][landmarkId] - source->landmarkDist[FROM][landmarkId] >
                 target->landmarkDist[FROM][result[FROM]] - source->landmarkDist[FROM][result[FROM]]) {
                 result[FROM] = landmarkId;

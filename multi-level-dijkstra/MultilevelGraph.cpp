@@ -1,4 +1,4 @@
-#include <c++/iostream>
+#include <iostream>
 #include "MultilevelGraph.h"
 
 MultilevelGraph::MultilevelGraph(const vector<Vertex *> &originalVertices) {
@@ -20,8 +20,10 @@ void MultilevelGraph::addLevel(const vector<Vertex *> &selectedVertices) {
 
 void MultilevelGraph::createConnectedComponents() {
     createConnectedComponentsForLevelZero();
-    for (int i = 1; i < levels.size(); ++i) {
+    for (unsigned i = 1; i < levels.size(); ++i) {
         createConnectedComponentsForLevel(i);
+        cout << "Connected Components count for Level " << i << ": "
+             << (levels[i].connectedComponents.size() - levels[i].selectedVertices.size()) << endl;
     }
 }
 
@@ -109,7 +111,7 @@ void MultilevelGraph::prepareVerticesForQueries() {
     for (Level &level: levels) {
         level.resetVertices();
     }
-    for (int i = 1; i < levels.size(); ++i) {
+    for (unsigned i = 1; i < levels.size(); ++i) {
         for (Vertex *v: levels[i].selectedVertices) {
             Vertex *lowerV = *levels[i - 1].selectedVertices.find(v);
             v->lower = lowerV;

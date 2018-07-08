@@ -6,7 +6,7 @@
 Alt::Alt(vector<AltVertex *> &graph, const int landmarksCount) : graph(&graph) {
     selectLandmarks(landmarksCount);
 
-    for (int i = 0; i < landmarks.size(); ++i) {
+    for (unsigned i = 0; i < landmarks.size(); ++i) {
         calculateLandmarkDistances(i, FROM);
         calculateLandmarkDistances(i, TO);
     }
@@ -23,7 +23,7 @@ void Alt::selectLandmarks(const int landmarksCount) {
     for (int i = 1; i < landmarksCount; ++i) {
         findNewFarthestLandmark(landmarks);
     }
-    for (int i = 0; i < landmarks.size(); ++i) {
+    for (unsigned i = 0; i < landmarks.size(); ++i) {
         landmarkIds[landmarks[i]] = i;
     }
 }

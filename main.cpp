@@ -120,7 +120,7 @@ void runBidirectionalDijkstra(const string &pathToGraph) {
     BidiProgram bidiProgram(pathToGraph);
 
     milliseconds start = getTime;
-    const vector<LL> &&bidiResults =bidiProgram.processQueries(queries);
+    const vector<LL> &&bidiResults = bidiProgram.processQueries(queries);
     milliseconds stop = getTime;
     cout << "\tbidirectional dijkstra execution time: " << (stop.count() - start.count()) << endl << endl;
 
