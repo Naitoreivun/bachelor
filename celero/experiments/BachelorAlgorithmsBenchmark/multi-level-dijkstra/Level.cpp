@@ -5,9 +5,9 @@ Level::Level(const int value, VertexSet selectedVertices) : value(value),
                                                             selectedVertices(std::move(selectedVertices)) {
 }
 
-Level::Level(const VertexSet &selectedVertices, const Level &prevLevel) : Level(prevLevel.value + 1, selectedVertices) {
+Level::Level(const VertexSet &selectedVertices, const Level *prevLevel) : Level(prevLevel->value + 1, selectedVertices) {
 
-    const VertexSet &prevSelectedVertices = prevLevel.selectedVertices;
+    const VertexSet &prevSelectedVertices = prevLevel->selectedVertices;
 
     for (Vertex *vertex: this->selectedVertices) {
         calculateShortestPathTree(*prevSelectedVertices.find(vertex), prevSelectedVertices);
@@ -111,4 +111,13 @@ void Level::bindCCWithSelectedVertex(ConnectedComponent *cc, Vertex *prevVertex)
     Vertex *selectedVertex = *selectedVertices.find(prevVertex);
     cc->adjVertices.insert(selectedVertex);
     selectedVertex->adjCC.insert(cc);
+}
+
+Level::~Level() {
+    for (Vertex *v: selectedVertices) {
+        delete v;
+    }
+    for (ConnectedComponent *cc: connectedComponents) {
+        delete cc;
+    }
 }

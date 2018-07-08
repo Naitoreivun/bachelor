@@ -12,6 +12,13 @@ struct BidiProgram {
     int n, m;
     vector<BidiVertex *> graph;
 
+    virtual ~BidiProgram() {
+        for (BidiVertex *v: graph) {
+            delete v;
+        }
+        graph.clear();
+    }
+
     explicit BidiProgram(const string &pathToGraph) {
         fstream file(pathToGraph);
 

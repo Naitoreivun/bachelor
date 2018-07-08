@@ -16,6 +16,14 @@ struct AltProgram {
     int landmarksCount;
     Alt *alt;
 
+    virtual ~AltProgram() {
+        for (AltVertex *v: graph) {
+            delete v;
+        }
+        graph.clear();
+        delete alt;
+    }
+
     explicit AltProgram(const string &pathToGraph) {
         fstream file(pathToGraph);
 
@@ -47,10 +55,6 @@ struct AltProgram {
         file.close();
 
         landmarksCount = min(DEFAULT_LANDMARKS_COUNT, n / 4);
-    }
-
-    virtual ~AltProgram() {
-        delete alt;
     }
 
     void preprocessing() {

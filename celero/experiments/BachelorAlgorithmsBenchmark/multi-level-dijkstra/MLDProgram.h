@@ -16,6 +16,11 @@ struct MLDProgram {
     vector<int> levelSizes;
     MultilevelGraph *M;
 
+    virtual ~MLDProgram() {
+        delete M;
+        graph.clear();
+    }
+
     explicit MLDProgram(const string &pathToGraph) {
         fstream file(pathToGraph);
 
@@ -51,10 +56,6 @@ struct MLDProgram {
             }
         }
         file.close();
-    }
-
-    virtual ~MLDProgram() {
-        delete M;
     }
 
     void preprocessing() {

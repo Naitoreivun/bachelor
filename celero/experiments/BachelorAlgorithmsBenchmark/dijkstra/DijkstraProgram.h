@@ -13,6 +13,13 @@ struct DijkstraProgram {
     int n, m;
     vector<RegularVertex *> graph;
 
+    virtual ~DijkstraProgram() {
+        for (RegularVertex *v: graph) {
+            delete v;
+        }
+        graph.clear();
+    }
+
     explicit DijkstraProgram(const string &pathToGraph) {
         fstream file(pathToGraph);
 

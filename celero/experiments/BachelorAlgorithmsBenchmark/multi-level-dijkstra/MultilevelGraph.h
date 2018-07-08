@@ -24,9 +24,11 @@ struct VertexAndLevelDijkstraComparator {
 };
 
 struct MultilevelGraph {
-    vector<Level> levels;
+    vector<Level*> levels;
 
     explicit MultilevelGraph(const vector<Vertex *> &originalVertices);
+
+    virtual ~MultilevelGraph();
 
     void addLevel(const vector<Vertex *> &selectedVertices);
 
@@ -71,11 +73,11 @@ private:
 
     void createConnectedComponentsForLevel(int levelValue);
 
-    void createConnectedComponent(Vertex *vertex, Level &prevLevel, Level &currentLevel);
+    void createConnectedComponent(Vertex *vertex, Level *prevLevel, Level *currentLevel);
 
-    void processAdjVertexInBfs(Level &currentLevel, queue<Vertex *> &Q, ConnectedComponent *cc, Vertex *v);
+    void processAdjVertexInBfs(Level *currentLevel, queue<Vertex *> &Q, ConnectedComponent *cc, Vertex *v);
 
-    void duplicateConnectedComponentsWithNoParent(Level &prevLevel, Level &currentLevel);
+    void duplicateConnectedComponentsWithNoParent(Level *prevLevel, Level *currentLevel);
 };
 
 #endif //BACHELOR_MULTILEVELGRAPH_H

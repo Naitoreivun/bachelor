@@ -6,7 +6,7 @@ MultilevelGraph::MultilevelGraph(const vector<Vertex *> &originalVertices) {
     for (Vertex *vertex: originalVertices) {
         vertexSet.insert(vertex);
     }
-    levels.emplace_back(0, vertexSet);
+    levels.push_back(new Level(0, vertexSet));
 }
 
 void MultilevelGraph::addLevel(const vector<Vertex *> &selectedVertices) {
@@ -15,37 +15,37 @@ void MultilevelGraph::addLevel(const vector<Vertex *> &selectedVertices) {
         vertexSet.insert(new Vertex(vertex->id));
     }
 
-    levels.emplace_back(vertexSet, levels.back());
+    levels.push_back(new Level(vertexSet, levels.back()));
 }
 
 void MultilevelGraph::createConnectedComponents() {
     createConnectedComponentsForLevelZero();
     for (unsigned i = 1; i < levels.size(); ++i) {
         createConnectedComponentsForLevel(i);
-        cout << "Connected Components count for Level " << i << ": "
-             << (levels[i].connectedComponents.size() - levels[i].selectedVertices.size()) << endl;
+//        cout << "Connected Components count for Level " << i << ": "
+//             << (levels[i].connectedComponents.size() - levels[i].selectedVertices.size()) << endl;
     }
 }
 
 void MultilevelGraph::createConnectedComponentsForLevelZero() {
-    Level &level0 = levels.front();
-    for (Vertex *v: level0.selectedVertices) {
+    Level *level0 = levels.front();
+    for (Vertex *v: level0->selectedVertices) {
         auto *cc = new ConnectedComponent();
         cc->adjVertices.insert(v);
         v->adjCC.insert(cc);
-        level0.connectedComponents.insert(cc);
+        level0->connectedComponents.insert(cc);
     }
 }
 
 void MultilevelGraph::createConnectedComponentsForLevel(int levelValue) {
-    Level &levelZero = levels.front();
-    Level &currentLevel = levels[levelValue];
-    Level &prevLevel = levels[levelValue - 1];
+    Level *levelZero = levels.front();
+    Level *currentLevel = levels[levelValue];
+    Level *prevLevel = levels[levelValue - 1];
 
-    levelZero.resetVertices();
+    levelZero->resetVertices();
 
-    for (Vertex *vertex: levelZero.selectedVertices) {
-        if (!vertex->visited && !currentLevel.isSelectedVertex(vertex)) {
+    for (Vertex *vertex: levelZero->selectedVertices) {
+        if (!vertex->visited && !currentLevel->isSelectedVertex(vertex)) {
             createConnectedComponent(vertex, prevLevel, currentLevel);
         }
     }
@@ -53,7 +53,7 @@ void MultilevelGraph::createConnectedComponentsForLevel(int levelValue) {
     duplicateConnectedComponentsWithNoParent(prevLevel, currentLevel);
 }
 
-void MultilevelGraph::createConnectedComponent(Vertex *vertex, Level &prevLevel, Level &currentLevel) {
+void MultilevelGraph::createConnectedComponent(Vertex *vertex, Level *prevLevel, Level *currentLevel) {
     queue<Vertex *> Q;
     vertex->visited = true;
     Q.push(vertex);
@@ -63,8 +63,8 @@ void MultilevelGraph::createConnectedComponent(Vertex *vertex, Level &prevLevel,
         Vertex *u = Q.front();
         Q.pop();
 
-        auto prevUIt = prevLevel.selectedVertices.find(u);
-        if (prevUIt != prevLevel.selectedVertices.end()) {
+        auto prevUIt = prevLevel->selectedVertices.find(u);
+        if (prevUIt != prevLevel->selectedVertices.end()) {
             for (ConnectedComponent *prevCC: (*prevUIt)->adjCC) {
                 prevCC->parent = cc;
             }
@@ -78,15 +78,15 @@ void MultilevelGraph::createConnectedComponent(Vertex *vertex, Level &prevLevel,
         }
     }
 
-    currentLevel.connectedComponents.insert(cc);
+    currentLevel->connectedComponents.insert(cc);
 }
 
-inline void MultilevelGraph::processAdjVertexInBfs(Level &currentLevel,
+inline void MultilevelGraph::processAdjVertexInBfs(Level *currentLevel,
                                                    queue<Vertex *> &Q,
                                                    ConnectedComponent *cc,
                                                    Vertex *v) {
-    if (currentLevel.isSelectedVertex(v)) {
-        currentLevel.bindCCWithSelectedVertex(cc, v);
+    if (currentLevel->isSelectedVertex(v)) {
+        currentLevel->bindCCWithSelectedVertex(cc, v);
     }
     else if (!v->visited) {
         Q.push(v);
@@ -94,26 +94,26 @@ inline void MultilevelGraph::processAdjVertexInBfs(Level &currentLevel,
     }
 }
 
-void MultilevelGraph::duplicateConnectedComponentsWithNoParent(Level &prevLevel, Level &currentLevel) {
-    for (ConnectedComponent *prevCC: prevLevel.connectedComponents) {
+void MultilevelGraph::duplicateConnectedComponentsWithNoParent(Level *prevLevel, Level *currentLevel) {
+    for (ConnectedComponent *prevCC: prevLevel->connectedComponents) {
         if (prevCC->parent == ConnectedComponent::ROOT) {
             ConnectedComponent *cc = new ConnectedComponent();
             prevCC->parent = cc;
             for (Vertex *prevAdjVertex: prevCC->adjVertices) {
-                currentLevel.bindCCWithSelectedVertex(cc, prevAdjVertex);
+                currentLevel->bindCCWithSelectedVertex(cc, prevAdjVertex);
             }
-            currentLevel.connectedComponents.insert(cc);
+            currentLevel->connectedComponents.insert(cc);
         }
     }
 }
 
 void MultilevelGraph::prepareVerticesForQueries() {
-    for (Level &level: levels) {
-        level.resetVertices();
+    for (Level *level: levels) {
+        level->resetVertices();
     }
     for (unsigned i = 1; i < levels.size(); ++i) {
-        for (Vertex *v: levels[i].selectedVertices) {
-            Vertex *lowerV = *levels[i - 1].selectedVertices.find(v);
+        for (Vertex *v: levels[i]->selectedVertices) {
+            Vertex *lowerV = *levels[i - 1]->selectedVertices.find(v);
             v->lower = lowerV;
             lowerV->upper = v;
         }
@@ -308,4 +308,10 @@ LL MultilevelGraph::regularDijkstra(Vertex *source, Vertex *target) {
     }
 
     return result;
+}
+
+MultilevelGraph::~MultilevelGraph() {
+    for (Level *l: levels) {
+        delete l;
+    }
 }

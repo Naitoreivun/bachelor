@@ -32,7 +32,7 @@ int main() {
     runBenchmark("test");
 //    runBenchmark("san-francisco");
 //    runBenchmark("oldenburg");
-//    runBenchmark("us-airport");
+    runBenchmark("us-airport");
 //    runBenchmark("cop-ph");
     return 0;
 }
@@ -95,8 +95,8 @@ void runAlts(const string &pathToGraph) {
     const vector<LL> &&bidiAltResults = runBidirectionalAlt(altProgram);
     const vector<LL> &&altResults = runAlt(altProgram);
 
-//    cout << "\tbidi alt ok? " << (bidiAltResults == dijkstraResults) << endl;
-//    cout << "\talt ok? " << (altResults == dijkstraResults) << endl;
+    cout << "\tbidi alt ok? " << (bidiAltResults == dijkstraResults) << endl;
+    cout << "\talt ok? " << (altResults == dijkstraResults) << endl << endl;
 }
 
 const vector<LL> runBidirectionalAlt(AltProgram &altProgram) {
@@ -112,7 +112,7 @@ const vector<LL> runAlt(AltProgram &altProgram) {
     milliseconds start = getTime;
     const vector<LL> &&altResults = altProgram.processQueries(queries);
     milliseconds stop = getTime;
-    cout << "\talt execution time: " << (stop.count() - start.count()) << endl << endl;
+    cout << "\talt execution time: " << (stop.count() - start.count()) << endl;
     return altResults;
 }
 
@@ -122,9 +122,9 @@ void runBidirectionalDijkstra(const string &pathToGraph) {
     milliseconds start = getTime;
     const vector<LL> &&bidiResults = bidiProgram.processQueries(queries);
     milliseconds stop = getTime;
-    cout << "\tbidirectional dijkstra execution time: " << (stop.count() - start.count()) << endl << endl;
+    cout << "\tbidirectional dijkstra execution time: " << (stop.count() - start.count()) << endl;
 
-//    cout << "\tbidi ok? " << (bidiResults == dijkstraResults) << endl;
+    cout << "\tbidi ok? " << (bidiResults == dijkstraResults) << endl << endl;
 }
 
 void runMultiLevelDijkstra(const string &pathToGraph) {
@@ -138,7 +138,7 @@ void runMultiLevelDijkstra(const string &pathToGraph) {
     start = getTime;
     const vector<LL> &&mldResults = mldProgram.processQueries(queries);
     stop = getTime;
-    cout << "\tmld execution time: " << (stop.count() - start.count()) << endl << endl;
+    cout << "\tmld execution time: " << (stop.count() - start.count()) << endl;
 
-//    cout << "\tmld ok? " << (mldResults == dijkstraResults) << endl;
+    cout << "\tmld ok? " << (mldResults == dijkstraResults) << endl << endl;
 }

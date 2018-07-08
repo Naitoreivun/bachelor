@@ -17,7 +17,9 @@ struct Level {
 
     Level(int value, VertexSet selectedVertices);
 
-    Level(const VertexSet &selectedVertices, const Level &prevLevel);
+    Level(const VertexSet &selectedVertices, const Level *prevLevel);
+
+    virtual ~Level();
 
     inline void resetVertices() {
         for (Vertex *v: selectedVertices) {
