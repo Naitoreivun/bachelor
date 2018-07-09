@@ -1,5 +1,8 @@
 # bachelor
 
+The code is wrapped in Celero benchmark tool. Path to code:
+`celero/experiments/BachelorAlgorithmsBenchmark`
+
 **benchmark tool** - https://github.com/DigitalInBlue/Celero/
 
 ### algorithm sources:

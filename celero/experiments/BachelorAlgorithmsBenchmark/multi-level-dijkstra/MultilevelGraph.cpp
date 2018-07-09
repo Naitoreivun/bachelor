@@ -22,8 +22,6 @@ void MultilevelGraph::createConnectedComponents() {
     createConnectedComponentsForLevelZero();
     for (unsigned i = 1; i < levels.size(); ++i) {
         createConnectedComponentsForLevel(i);
-//        cout << "Connected Components count for Level " << i << ": "
-//             << (levels[i].connectedComponents.size() - levels[i].selectedVertices.size()) << endl;
     }
 }
 

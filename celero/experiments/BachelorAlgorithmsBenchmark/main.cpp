@@ -29,11 +29,11 @@ void runBidirectionalDijkstra(const string &pathToGraph);
 void runMultiLevelDijkstra(const string &pathToGraph);
 
 int main() {
-    runBenchmark("test");
-//    runBenchmark("san-francisco");
-//    runBenchmark("oldenburg");
+//    runBenchmark("test");
     runBenchmark("us-airport");
-//    runBenchmark("cop-ph");
+    runBenchmark("oldenburg");
+    runBenchmark("san-francisco");
+    runBenchmark("cop-ph");
     return 0;
 }
 

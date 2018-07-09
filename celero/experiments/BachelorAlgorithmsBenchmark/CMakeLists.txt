@@ -4,7 +4,7 @@ project(BachelorAlgorithmsBenchmark)
 set(CMAKE_CXX_STANDARD 11)
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -O3")
-#set(DCMAKE_BUILD_TYPE Release)
+set(DCMAKE_BUILD_TYPE Release)
 
 #
 # CMake Configuration
