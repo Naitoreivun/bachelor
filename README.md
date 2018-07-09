@@ -3,6 +3,15 @@
 The code is wrapped in Celero benchmark tool. Path to code:
 `celero/experiments/BachelorAlgorithmsBenchmark`
 
+In order to build and run the benchmark test:
+1. Open terminal in root directory (that consists `tests` and `celero` directories)
+2. type `mkdir build && cd build`
+3. type `cmake ..` to build makefile
+4. type `make install` to build program
+5. type `./celeroBachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
+
+---
+
 **benchmark tool** - https://github.com/DigitalInBlue/Celero/
 
 ### algorithm sources:
