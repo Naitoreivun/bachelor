@@ -5,10 +5,29 @@ The code is wrapped in Celero benchmark tool. Path to code:
 
 In order to build and run the benchmark test:
 1. Open terminal in root directory (that consists `tests` and `celero` directories)
-2. type `mkdir build && cd build`
-3. type `cmake ..` to build makefile
-4. type `make install` to build program
-5. type `./celeroBachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
+2. Type `mkdir build && cd build`
+3. Type `cmake ..` to build makefile
+4. Type `make install` to build program
+5. Type `./celeroBachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
+6. You will see the table with results:
+    - `Group` column denotes test type:
+        - Execution - measures algorithm execution time
+        - Preprocessing - measures algorithm preprocessing time
+    - `Experiment` column denotes particular algorithm:
+        - `RegularDijkstra` - Dijkstra
+        - `BidirectionalDijkstra` - Bidirectional Dijkstra
+        - `ALT_1` - Unidirectional ALT
+        - `ALT_2` - Bidirectional ALT
+        - `MultiLevelGraph` - algorithm that uses Multi-level Graph structure
+    - `Prob. Space` column denotes the no. of test case:
+        - `0` - US Airports
+        - `1` - Oldenburg
+        - `2` - San Francisco
+        - `3` - High Energy Physics - Phenomenology collaboration network
+    - `Samples`, `Iterations` and `Baseline` columns are well described [here](https://github.com/DigitalInBlue/Celero/#using-the-code); in our case one iteration is the set of tests for particular test case
+    - `us/Iteration` column denotes the time (in microseconds) spent on processing one iteration
+    - `Iterations/sec` column denotes processed iteration count per second
+
 
 ---
 
