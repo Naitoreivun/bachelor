@@ -19,7 +19,7 @@ In order to build and run the benchmark test:
         - `ALT_1` - Unidirectional ALT
         - `ALT_2` - Bidirectional ALT
         - `MultiLevelGraph` - algorithm that uses Multi-level Graph structure
-    - `Prob. Space` column denotes the no. of test case:
+    - `Prob. Space` column denotes the number of test case:
         - `0` - US Airports
         - `1` - Oldenburg
         - `2` - San Francisco
