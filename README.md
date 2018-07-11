@@ -7,9 +7,10 @@ In order to build and run the benchmark test:
 1. Open terminal in root directory (that consists `tests` and `celero` directories)
 2. Type `mkdir build && cd build`
 3. Type `cmake ..` to build makefile
-4. Type `make install` to build program
-5. Type `./celeroBachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
-6. You will see the table with results:
+4. Type `make` to build program
+5. Type `cd BachelorAlgorithmsBenchmark`
+6. Type `./celeroBachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
+7. You will see the table with results:
     - `Group` column denotes test type:
         - Execution - measures algorithm execution time
         - Preprocessing - measures algorithm preprocessing time
