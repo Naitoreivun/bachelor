@@ -33,7 +33,7 @@ add_executable(run_custom_main main.cpp "${ALL_FILES}")
 add_executable(${PROJECT_NAME} BachelorAlgorithmsBenchmark.cpp "${ALL_FILES}")
 
 # Broiler Plate: Celero Project Dependencies
-#add_dependencies(${PROJECT_NAME} celero)
+add_dependencies(${PROJECT_NAME} celero)
 target_link_libraries("${PROJECT_NAME}" celero)
 
 if (MSVC)
@@ -50,5 +50,3 @@ endif ()
 if (CELERO_ENABLE_FOLDERS)
     set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "/")
 endif ()
-
-#install(TARGETS myexe EXPORT myproj DESTINATION bin)
