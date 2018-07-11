@@ -5,7 +5,7 @@ In order to build and run the benchmark test:
 3. Type `cmake ..` to build makefile
 4. Type `make` to build program
 5. Type `cd BachelorAlgorithmsBenchmark`
-6. Type `./celeroBachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
+6. Type `./bachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
 7. You will see the table with results:
     - `Group` column denotes test type:
         - Execution - measures algorithm execution time
