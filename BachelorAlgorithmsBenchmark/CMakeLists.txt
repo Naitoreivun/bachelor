@@ -1,9 +1,6 @@
-cmake_minimum_required(VERSION 3.11.4)
+cmake_minimum_required(VERSION 3.5.1)
 project(BachelorAlgorithmsBenchmark)
 
-#
-# Set the experiment's name here.  Start it with "celero" and use camel case naming.
-#
 SET(PROJECT_NAME bachelorAlgorithmsBenchmark)
 
 set(ALT_DIR alt)
@@ -32,8 +29,7 @@ add_executable(run_custom_main main.cpp "${ALL_FILES}")
 
 add_executable(${PROJECT_NAME} BachelorAlgorithmsBenchmark.cpp "${ALL_FILES}")
 
-# Broiler Plate: Celero Project Dependencies
-add_dependencies(${PROJECT_NAME} celero)
+add_dependencies(${PROJECT_NAME} Celero)
 target_link_libraries("${PROJECT_NAME}" celero)
 
 if (MSVC)

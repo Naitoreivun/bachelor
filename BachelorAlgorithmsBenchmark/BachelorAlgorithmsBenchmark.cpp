@@ -32,9 +32,9 @@ public:
 
     virtual void setUp(const celero::TestFixture::ExperimentValue &experimentValue) override {
         const string filename = filenames[experimentValue.Value];
-        const string pathToQueries = "../tests/" + filename + "_queries.in";
+        const string pathToQueries = "../../tests/" + filename + "_queries.in";
         loadQueries(pathToQueries);
-        pathToGraph = "../tests/" + filename + ".in";
+        pathToGraph = "../../tests/" + filename + ".in";
     }
 
 

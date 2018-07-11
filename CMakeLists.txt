@@ -1,22 +1,19 @@
-cmake_minimum_required(VERSION 3.11.4)
+cmake_minimum_required(VERSION 3.5.1)
 #set(DCMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -O3")
 
+include(ExternalProject)
+
 set(CELERO_COMPILE_DYNAMIC_LIBRARIES OFF)
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
-include(FetchContent)
-FetchContent_Declare(
-        celero
+ExternalProject_Add(Celero
         GIT_REPOSITORY https://github.com/DigitalInBlue/Celero.git
-        GIT_TAG        v2.3.0
-)
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+        )
 
-FetchContent_GetProperties(celero)
-if(NOT celero_POPULATED)
-    FetchContent_Populate(celero)
-    add_subdirectory(${celero_SOURCE_DIR} ${celero_BINARY_DIR})
-endif()
+include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 
-message(STATUS "Catch include dir: ${celero_SOURCE_DIR}/include")
 add_subdirectory(BachelorAlgorithmsBenchmark)

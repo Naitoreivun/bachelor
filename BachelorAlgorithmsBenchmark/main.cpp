@@ -40,8 +40,8 @@ int main() {
 void runBenchmark(const string &filename) {
     cout << filename << " benchmark:\n\n";
 
-    const string pathToGraph = "../tests/" + filename + ".in";
-    const string pathToQueries = "../tests/" + filename + "_queries.in";
+    const string pathToGraph = "../../tests/" + filename + ".in";
+    const string pathToQueries = "../../tests/" + filename + "_queries.in";
 
     loadQueries(pathToQueries);
     runRegularDijkstra(pathToGraph);
