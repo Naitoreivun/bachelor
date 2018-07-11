@@ -1,10 +1,6 @@
 # bachelor
-
-The code is wrapped in Celero benchmark tool. Path to code:
-`celero/experiments/BachelorAlgorithmsBenchmark`
-
 In order to build and run the benchmark test:
-1. Open terminal in root directory (that consists `tests` and `celero` directories)
+1. Open terminal in root directory (that consists `tests` and `BachelorAlgorithmsBenchmark` directories)
 2. Type `mkdir build && cd build`
 3. Type `cmake ..` to build makefile
 4. Type `make` to build program
