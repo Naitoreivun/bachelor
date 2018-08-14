@@ -33,7 +33,7 @@ int main() {
     runBenchmark("us-airport");
     runBenchmark("oldenburg");
     runBenchmark("san-francisco");
-    runBenchmark("cop-ph");
+    runBenchmark("emails");
     return 0;
 }
 

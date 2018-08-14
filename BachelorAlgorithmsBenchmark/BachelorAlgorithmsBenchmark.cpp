@@ -14,7 +14,7 @@ CELERO_MAIN
 
 class BenchmarkBaseFixture: public celero::TestFixture {
 public:
-    const vector<string> filenames = {"us-airport", "oldenburg", "san-francisco", "cop-ph"};
+    const vector<string> filenames = {"us-airport", "oldenburg", "san-francisco", "emails"};
     vector<pair<int, int>> queries;
     string pathToGraph;
 

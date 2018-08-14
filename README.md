@@ -47,4 +47,4 @@ https://www.cs.utah.edu/~lifeifei/SpatialDataset.htm
 
 https://toreopsahl.com/datasets/#usairports
 
-https://snap.stanford.edu/data/ca-HepPh.html
+http://konect.uni-koblenz.de/networks/arenas-email
