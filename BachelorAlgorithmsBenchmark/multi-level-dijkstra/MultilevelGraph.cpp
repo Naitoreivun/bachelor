@@ -198,7 +198,7 @@ inline vector<ConnectedComponent *> MultilevelGraph::getUpwardCCPath(Vertex *ver
         cc = cc->parent;
     }
 
-    return std::move(V);
+    return V;
 }
 
 inline void MultilevelGraph::popEveryCommonCCAncestors(vector<ConnectedComponent *> &v1,

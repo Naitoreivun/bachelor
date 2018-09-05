@@ -25,8 +25,6 @@ set(DIJKSTRA_FILES dijkstra/DijkstraProgram.h dijkstra/RegularVertex.h dijkstra/
 
 set(ALL_FILES imports_and_configs.h "${ALT_FILES}" "${BIDI_FILES}" "${DIJKSTRA_FILES}" "${MLD_FILES}")
 
-add_executable(run_custom_main main.cpp "${ALL_FILES}")
-
 add_executable(${PROJECT_NAME} BachelorAlgorithmsBenchmark.cpp "${ALL_FILES}")
 
 add_dependencies(${PROJECT_NAME} Celero)

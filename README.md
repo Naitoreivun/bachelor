@@ -1,12 +1,13 @@
 # bachelor
 In order to build and run the benchmark test:
-1. Open terminal in root directory (that consists `tests` and `BachelorAlgorithmsBenchmark` directories)
-2. Type `mkdir build && cd build`
-3. Type `cmake ..` to build makefile
-4. Type `make` to build program
-5. Type `cd BachelorAlgorithmsBenchmark`
-6. Type `./bachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
-7. You will see the table with results:
+1. You will need some extra libraries, like `curses.h`, that may not be installed on your system. In that case type `apt-get install libncurses5-dev`.
+2. Open terminal in root directory (that consists `tests` and `BachelorAlgorithmsBenchmark` directories)
+3. Type `mkdir build && cd build`
+4. Type `cmake ..` to build makefile
+5. Type `make` to build program
+6. Type `cd BachelorAlgorithmsBenchmark`
+7. Type `./bachelorAlgorithmsBenchmark` to run benchmark (it can last even few hours)
+8. You will see the table with results:
     - `Group` column denotes test type:
         - Execution - measures algorithm execution time
         - Preprocessing - measures algorithm preprocessing time
